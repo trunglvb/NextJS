@@ -24,10 +24,19 @@ export class HttpError extends Error {
 		message: string;
 		[key: string]: any;
 	};
-	constructor({ status, payload }: { status: number; payload: any }) {
-		super("Http Error");
+	constructor({
+		status,
+		payload,
+		message = "Lỗi HTTP",
+	}: {
+		status: number;
+		payload: any;
+		message?: string;
+	}) {
+		super(message);
 		this.status = status;
 		this.payload = payload;
+		// this.message = message; // neu khong dung super thi phai dung this.message
 	}
 }
 
@@ -41,7 +50,7 @@ export class EntityError extends HttpError {
 		status: 422;
 		payload: EntityErrorPayload;
 	}) {
-		super({ status, payload });
+		super({ status, payload }); // ke thua tu HttpError
 		this.status = status;
 		this.payload = payload;
 	}
@@ -69,9 +78,9 @@ const request = async <Response>(
 					"Content-Type": "application/json",
 			  };
 	if (isClient()) {
-		const sessionToken = localStorage.getItem("sessionToken");
-		if (sessionToken) {
-			baseHeaders.Authorization = `Bearer ${sessionToken}`;
+		const accessToken = localStorage.getItem("accessToken");
+		if (accessToken) {
+			baseHeaders.Authorization = `Bearer ${accessToken}`;
 		}
 	}
 	// Nếu không truyền baseUrl (hoặc baseUrl = undefined) thì lấy từ clientEnvConfig.NEXT_PUBLIC_API_ENDPOINT
@@ -82,9 +91,7 @@ const request = async <Response>(
 			? clientEnvConfig.NEXT_PUBLIC_API_ENDPOINT
 			: options.baseUrl;
 
-	const fullUrl = url.startsWith("/")
-		? `${baseUrl}${url}`
-		: `${baseUrl}/${url}`;
+	const fullUrl = `${baseUrl}/${normalizePath(url)}`;
 
 	const res = await fetch(fullUrl, {
 		...options,
@@ -114,7 +121,7 @@ const request = async <Response>(
 				if (!clientLogoutRequest) {
 					clientLogoutRequest = fetch("/api/auth/logout", {
 						method: "POST",
-						body: JSON.stringify({ force: true }),
+						body: null, //luon cho phep logout ke ca truong hop accessToken  hoac refreshToken het han
 						headers: {
 							...baseHeaders,
 						} as any,
@@ -123,17 +130,19 @@ const request = async <Response>(
 						await clientLogoutRequest;
 					} catch (error) {
 					} finally {
-						localStorage.removeItem("sessionToken");
-						localStorage.removeItem("sessionTokenExpiresAt");
+						localStorage.removeItem("accessToken");
+						localStorage.removeItem("refreshToken");
 						clientLogoutRequest = null;
+
+						//redirect ve login co the dan den loop vo han neu tai trang login => can goi cac api can accessToken ma token da bi xoa => no tiep tuc chay vao day va loop vo han
 						location.href = "/login";
 					}
 				}
 			} else {
-				const sessionToken = (
+				const accessToken = (
 					options?.headers as any
 				)?.Authorization.split("Bearer ")[1];
-				redirect(`/logout?sessionToken=${sessionToken}`);
+				redirect(`/logout?accessToken=${accessToken}`);
 			}
 		} else {
 			throw new HttpError(data);
@@ -141,17 +150,15 @@ const request = async <Response>(
 	}
 	// Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
 	if (isClient()) {
-		if (
-			["auth/login", "auth/register"].some(
-				(item) => item === normalizePath(url)
-			)
-		) {
-			const { token, expiresAt } = (payload as LoginResType).data;
-			localStorage.setItem("sessionToken", token);
-			localStorage.setItem("sessionTokenExpiresAt", expiresAt);
-		} else if ("auth/logout" === normalizePath(url)) {
-			localStorage.removeItem("sessionToken");
-			localStorage.removeItem("sessionTokenExpiresAt");
+		const normalizeUrl = normalizePath(url);
+		if (normalizeUrl === "api/auth/login") {
+			const { accessToken, refreshToken } = (payload as LoginResType)
+				.data;
+			localStorage.setItem("accessToken", accessToken);
+			localStorage.setItem("refreshToken", refreshToken);
+		} else if ("api/auth/logout" === normalizeUrl) {
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
 		}
 	}
 	return data;
