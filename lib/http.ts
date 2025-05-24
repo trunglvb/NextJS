@@ -33,10 +33,10 @@ export class HttpError extends Error {
 		payload: any;
 		message?: string;
 	}) {
-		super(message);
+		super();
 		this.status = status;
 		this.payload = payload;
-		// this.message = message; // neu khong dung super thi phai dung this.message
+		this.message = message; // neu khong dung super thi phai dung this.message
 	}
 }
 
@@ -50,7 +50,7 @@ export class EntityError extends HttpError {
 		status: 422;
 		payload: EntityErrorPayload;
 	}) {
-		super({ status, payload }); // ke thua tu HttpError
+		super({ status, payload }); // ke thua tu HttpError, constructor co gi thi phai add trong super
 		this.status = status;
 		this.payload = payload;
 	}
