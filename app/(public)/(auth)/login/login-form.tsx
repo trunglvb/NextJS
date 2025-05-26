@@ -13,6 +13,10 @@ import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import authApiRequests from "@/apiRequests/auth";
+import { toast } from "sonner";
+import { handleErrorApi } from "@/lib/utils";
 
 export default function LoginForm() {
 	const form = useForm<LoginBodyType>({
@@ -21,6 +25,19 @@ export default function LoginForm() {
 			email: "",
 			password: "",
 		},
+	});
+
+	const loginMutation = useMutation({
+		mutationFn: authApiRequests.login,
+	});
+
+	const onSubmit = form.handleSubmit(async (data: LoginBodyType) => {
+		try {
+			await loginMutation.mutateAsync(data);
+			toast.success("Đăng nhập thành công");
+		} catch (error: any) {
+			handleErrorApi({ error: error, setError: form.setError });
+		}
 	});
 
 	return (
@@ -82,6 +99,7 @@ export default function LoginForm() {
 							<Button
 								type="submit"
 								className="w-full cursor-pointer"
+								onClick={onSubmit}
 							>
 								Đăng nhập
 							</Button>
