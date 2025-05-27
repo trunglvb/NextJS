@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { clientEnvConfig } from "@/config";
 import { normalizePath } from "@/lib/utils";
 import { LoginResType } from "@/schemaValidations/auth.schema";
@@ -129,7 +130,8 @@ const request = async <Response>(
 					});
 					try {
 						await clientLogoutRequest;
-					} catch (error) {
+					} catch (_error) {
+						console.log(_error);
 					} finally {
 						localStorage.removeItem("accessToken");
 						localStorage.removeItem("refreshToken");
