@@ -46,3 +46,8 @@ export const getAccessTokenFromLocalStorage = () =>
 
 export const getRefreshTokenFromLocalStorage = () =>
 	isClient ? localStorage.getItem("refreshToken") : null;
+
+export const clearLocalStorage = () => {
+	localStorage.removeItem("accessToken");
+	localStorage.removeItem("refreshToken");
+};

@@ -1,44 +1,74 @@
-'use client'
+"use client";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import authApiRequests from "@/apiRequests/auth";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const account = {
-  name: 'Nguyễn Văn A',
-  avatar: 'https://i.pravatar.cc/150'
-}
+	name: "Nguyễn Văn A",
+	avatar: "https://i.pravatar.cc/150",
+};
 
 export default function DropdownAvatar() {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='outline' size='icon' className='overflow-hidden rounded-full'>
-          <Avatar>
-            <AvatarImage src={account.avatar ?? undefined} alt={account.name} />
-            <AvatarFallback>{account.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-        <DropdownMenuLabel>{account.name}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href={'/manage/setting'} className='cursor-pointer'>
-            Cài đặt
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Đăng xuất</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+	const router = useRouter();
+
+	const loginMutation = useMutation({
+		mutationFn: authApiRequests.logout,
+	});
+
+	const handleLogout = async () => {
+		await loginMutation.mutateAsync({
+			refreshToken: localStorage.getItem("refreshToken") as string,
+		});
+		toast.success("Đăng xuất thành công");
+		router.push("/");
+		// clearLocalStorage(); config tai http.ts
+	};
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					variant="outline"
+					size="icon"
+					className="overflow-hidden rounded-full"
+				>
+					<Avatar>
+						<AvatarImage
+							src={account.avatar ?? undefined}
+							alt={account.name}
+						/>
+						<AvatarFallback>
+							{account.name.slice(0, 2).toUpperCase()}
+						</AvatarFallback>
+					</Avatar>
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end">
+				<DropdownMenuLabel>{account.name}</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<Link href={"/manage/setting"} className="cursor-pointer">
+						Cài đặt
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem onClick={handleLogout}>
+					Đăng xuất
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
 }
