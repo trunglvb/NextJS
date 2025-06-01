@@ -2,15 +2,6 @@ import DropdownAvatar from "@/app/manage/dropdown-avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import DarkModeToggle from "@/components/dark-mode-toggle";
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
