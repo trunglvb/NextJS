@@ -1,4 +1,4 @@
-import DropdownAvatar from "@/app/manage/dropdown-avatar";
+import DropdownAvatar from "@/app/manage/components/dropdown-avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import DarkModeToggle from "@/components/dark-mode-toggle";
 import {

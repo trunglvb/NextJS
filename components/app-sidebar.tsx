@@ -8,7 +8,8 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import menuItems from "@/app/manage/menuItems";
+import menuItems from "@/constants/menu";
+import Link from "next/link";
 
 // Menu items.
 
@@ -23,10 +24,10 @@ export function AppSidebar() {
 							{menuItems.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
-										<a href={item.href}>
+										<Link href={item.href}>
 											<item.Icon />
 											<span>{item.title}</span>
-										</a>
+										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
