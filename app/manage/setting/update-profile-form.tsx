@@ -16,6 +16,8 @@ import { mediaRequests } from "@/apiRequests/media";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import accountApiRequests from "@/apiRequests/account";
+import { toast } from "sonner";
+import { handleErrorApi } from "@/lib/utils";
 
 export default function UpdateProfileForm() {
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +28,7 @@ export default function UpdateProfileForm() {
 			avatar: undefined,
 		},
 	});
-	const { data: profileData } = useQuery({
+	const { data: profileData, refetch } = useQuery({
 		queryKey: ["account-me"],
 		queryFn: accountApiRequests.getMe,
 	});
@@ -56,14 +58,34 @@ export default function UpdateProfileForm() {
 
 	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
-		let imageUrl = avatar;
-		if (file) {
-			setFile(file);
-			const formData = new FormData();
-			formData.append("file", file);
-			const fileResponse = await uploadMutatuion.mutateAsync(formData);
-			imageUrl = fileResponse.payload?.data;
+		setFile(file!);
+	};
+
+	const onSubmit = form.handleSubmit(async (data) => {
+		try {
+			let imageUrl = avatar;
+			if (file) {
+				const formData = new FormData();
+				formData.append("file", file);
+				const fileResponse = await uploadMutatuion.mutateAsync(
+					formData
+				);
+				imageUrl = fileResponse.payload?.data;
+			}
+			const res = await accountApiRequests.updateMe({
+				name: data.name,
+				avatar: imageUrl as string,
+			});
+			toast.success(res.payload.message);
+			refetch();
+		} catch (error) {
+			handleErrorApi({ error: error, setError: form.setError });
 		}
+	});
+
+	const onReset = () => {
+		setFile(null);
+		form.reset();
 	};
 
 	const handleUploadSameImageError = (
@@ -77,6 +99,8 @@ export default function UpdateProfileForm() {
 			<form
 				noValidate
 				className="grid auto-rows-max items-start gap-4 md:gap-8"
+				onReset={onReset}
+				onSubmit={onSubmit}
 			>
 				<Card x-chunk="dashboard-07-chunk-0">
 					<CardHeader>
