@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
 		privatePaths.some((path) => pathname.startsWith(path)) &&
 		!accessToken
 	) {
-		return NextResponse.redirect(new URL("/login", request.url));
+		return NextResponse.redirect(new URL("/logout", request.url));
 	}
 	// Đăng nhập rồi thì không cho vào login/register nữa
 	if (authPaths.some((path) => pathname.startsWith(path)) && accessToken) {
