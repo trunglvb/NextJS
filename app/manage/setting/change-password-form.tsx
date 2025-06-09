@@ -11,6 +11,11 @@ import {
 } from "@/schemaValidations/account.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useMutation } from "@tanstack/react-query";
+import accountApiRequests from "@/apiRequests/account";
+import { toast } from "sonner";
+import { handleErrorApi } from "@/lib/utils";
+import { on } from "events";
 
 export default function ChangePasswordForm() {
 	const form = useForm<ChangePasswordBodyType>({
@@ -22,11 +27,31 @@ export default function ChangePasswordForm() {
 		},
 	});
 
+	const changePasswordMutation = useMutation({
+		mutationFn: accountApiRequests.changePassword,
+	});
+
+	const onSubmit = form.handleSubmit(async (data: ChangePasswordBodyType) => {
+		try {
+			const res = await changePasswordMutation.mutateAsync(data);
+			toast.success(res.payload.message);
+			form.reset();
+		} catch (error) {
+			handleErrorApi({ error: error, setError: form.setError });
+		}
+	});
+
+	const onReset = () => {
+		form.reset();
+	};
+
 	return (
 		<Form {...form}>
 			<form
 				noValidate
 				className="grid auto-rows-max items-start gap-4 md:gap-8"
+				onReset={onReset}
+				onSubmit={onSubmit}
 			>
 				<Card
 					className="overflow-hidden"

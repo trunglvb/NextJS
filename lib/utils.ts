@@ -26,6 +26,7 @@ export const handleErrorApi = ({
 	duration?: number;
 }) => {
 	if (error instanceof EntityError && setError) {
+		console.log(error);
 		error.payload.errors.forEach((item) => {
 			setError(item.field, {
 				type: "server",
