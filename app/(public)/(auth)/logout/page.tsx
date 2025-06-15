@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import authApiRequests from "@/apiRequests/auth";
-import { getRefreshTokenFromLocalStorage } from "@/lib/utils";
+import {
+	getAccessTokenFromLocalStorage,
+	getRefreshTokenFromLocalStorage,
+} from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
@@ -11,6 +14,7 @@ const Logout = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const refreshTokenFromUrl = searchParams.get("refreshToken");
+	const accessTokenFromUrl = searchParams.get("accessToken");
 
 	const logoutMutation = useMutation({
 		mutationFn: authApiRequests.logout,
@@ -21,7 +25,10 @@ const Logout = () => {
 	useEffect(() => {
 		if (
 			ref.current ||
-			refreshTokenFromUrl !== getRefreshTokenFromLocalStorage()
+			(refreshTokenFromUrl &&
+				refreshTokenFromUrl !== getRefreshTokenFromLocalStorage()) ||
+			(accessTokenFromUrl &&
+				accessTokenFromUrl !== getAccessTokenFromLocalStorage())
 		)
 			return;
 		ref.current = mutateAsync;
@@ -33,7 +40,7 @@ const Logout = () => {
 				ref.current = null;
 			}, 2000);
 		});
-	}, [mutateAsync, router]);
+	}, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl]);
 	return <div></div>;
 };
 

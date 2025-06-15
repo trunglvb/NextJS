@@ -142,6 +142,8 @@ const request = async <Response>(
 					}
 				}
 			} else {
+				// truong hop van con access token
+				// goi api tu Next server den Backend server
 				const accessToken = (
 					options?.headers as any
 				)?.Authorization.split("Bearer ")[1];
