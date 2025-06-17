@@ -9,6 +9,10 @@ import {
 
 //tu next client goi login toi Next server => next server goi login toi server
 const authApiRequests = {
+	refreshTokenRequest: null as Promise<{
+		status: number;
+		payload: RefreshTokenResType;
+	}> | null,
 	serverLogin: (body: LoginBodyType) =>
 		http.post<LoginResType>("/auth/login", body),
 	login: (body: LoginBodyType) =>
@@ -35,9 +39,17 @@ const authApiRequests = {
 	sRefreshToken: (body: RefreshTokenBodyType) =>
 		http.post<RefreshTokenResType>("/auth/refresh-token", body),
 
-	refreshToken: () =>
-		http.post<RefreshTokenResType>("/api/auth/refresh-token", null, {
-			baseUrl: "",
-		}),
+	async refreshToken() {
+		if (this.refreshTokenRequest) return this.refreshTokenRequest;
+		this.refreshTokenRequest = http.post<RefreshTokenResType>(
+			"/api/auth/refresh-token",
+			null,
+			{
+				baseUrl: "",
+			}
+		);
+		const res = this.refreshTokenRequest;
+		return res;
+	},
 };
 export default authApiRequests;
