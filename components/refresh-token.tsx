@@ -3,20 +3,23 @@ import { useEffect } from "react";
 import jwt from "jsonwebtoken";
 import authApiRequests from "@/apiRequests/auth";
 import {
+	getAccessTokenFromLocalStorage,
+	getRefreshTokenFromLocalStorage,
 	setAccessTokenToLocalStorage,
 	setRefreshTokenToLocalStorage,
 } from "@/lib/utils";
 
-const undauthenticatedPaths = ["/login", "/register", "/refresh-token"];
+const undauthenticatedPaths = ["/login", "/refresh-token"];
 const RefreshToken = () => {
 	const pathname = usePathname();
 
 	useEffect(() => {
 		if (undauthenticatedPaths.includes(pathname)) return;
-		const interval: any = null;
+		let interval: any = null;
 		const checkAndRefreshToken = async () => {
-			const accessToken = localStorage.getItem("accessToken");
-			const refreshToken = localStorage.getItem("refreshToken");
+			const accessToken = getAccessTokenFromLocalStorage();
+			const refreshToken = getRefreshTokenFromLocalStorage();
+
 			if (!accessToken || !refreshToken) return;
 
 			//thoi diem het han cua token tinh theo epoch time
@@ -30,7 +33,7 @@ const RefreshToken = () => {
 				iat: number;
 			};
 			const now = Math.round(new Date().getTime() / 1000);
-			if (now > decodeAccessToken.exp) return;
+			if (decodeRefreshToken.exp <= now) return;
 			// se goi api refresh token khi thoi gian accessToken con lai 1/3.
 			// vi du thoi gian ton tai cua accessToken la 90 giay, thi se goi api refresh token khi thoi gian con lai la 30 giay
 			//thoi gian con lai cua accessToken: decodeAccessToken/exp - now
@@ -51,9 +54,11 @@ const RefreshToken = () => {
 		};
 
 		checkAndRefreshToken();
-		setInterval(checkAndRefreshToken, 1000); //timer phai nho hon thoi gian het han cua access token
+		interval = setInterval(checkAndRefreshToken, 2000); //timer phai nho hon thoi gian het han cua access token
 
-		return () => clearInterval(interval);
+		return () => {
+			clearInterval(interval);
+		};
 	}, [pathname]);
 	return null;
 };
