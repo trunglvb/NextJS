@@ -29,11 +29,12 @@ export function middleware(request: NextRequest) {
 		!accessToken &&
 		refreshToken
 	) {
-		const url = new URL("/logout", request.url);
+		const url = new URL("/refresh-token", request.url);
 		url.searchParams.set(
 			"refreshToken",
 			request.cookies.get("refreshToken")?.value || ""
 		);
+		url.searchParams.set("redirect", pathname);
 		return NextResponse.redirect(url);
 	}
 	return NextResponse.next();
