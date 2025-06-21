@@ -33,7 +33,7 @@ const Logout = () => {
 			return;
 		ref.current = mutateAsync;
 		mutateAsync({
-			refreshToken: localStorage.getItem("refreshToken") as string,
+			refreshToken: getRefreshTokenFromLocalStorage() as string,
 		}).then(() => {
 			router.push("/login");
 			setTimeout(() => {

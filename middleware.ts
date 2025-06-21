@@ -26,7 +26,8 @@ export function middleware(request: NextRequest) {
 	//Đăng nhập rồi nhưng accessToken hết hạn
 	if (
 		privatePaths.some((path) => pathname.startsWith(path)) &&
-		!accessToken
+		!accessToken &&
+		refreshToken
 	) {
 		const url = new URL("/logout", request.url);
 		url.searchParams.set(
