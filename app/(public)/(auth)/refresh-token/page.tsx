@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import authApiRequests from "@/apiRequests/auth";
 import {
+	clearLocalStorage,
 	getAccessTokenFromLocalStorage,
 	getRefreshTokenFromLocalStorage,
 	setAccessTokenToLocalStorage,
@@ -39,7 +40,11 @@ const RefreshTokenPage = () => {
 					iat: number;
 				};
 				const now = Math.round(new Date().getTime() / 1000);
-				if (decodeRefreshToken.exp <= now) return;
+				if (decodeRefreshToken.exp <= now) {
+					clearLocalStorage();
+					clearInterval(interval);
+					return;
+				}
 				// se goi api refresh token khi thoi gian accessToken con lai 1/3.
 				// vi du thoi gian ton tai cua accessToken la 90 giay, thi se goi api refresh token khi thoi gian con lai la 30 giay
 				//thoi gian con lai cua accessToken: decodeAccessToken/exp - now
@@ -59,6 +64,7 @@ const RefreshTokenPage = () => {
 						router.push(`/${redirectPath}`);
 					} catch (error) {
 						clearInterval(interval);
+						router.push("/logout");
 					}
 				}
 			};

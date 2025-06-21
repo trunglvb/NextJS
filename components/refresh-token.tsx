@@ -1,8 +1,9 @@
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import jwt from "jsonwebtoken";
 import authApiRequests from "@/apiRequests/auth";
 import {
+	clearLocalStorage,
 	getAccessTokenFromLocalStorage,
 	getRefreshTokenFromLocalStorage,
 	setAccessTokenToLocalStorage,
@@ -12,6 +13,7 @@ import {
 const undauthenticatedPaths = ["/login", "/refresh-token"];
 const RefreshToken = () => {
 	const pathname = usePathname();
+	const router = useRouter();
 
 	useEffect(() => {
 		if (undauthenticatedPaths.includes(pathname)) return;
@@ -33,7 +35,11 @@ const RefreshToken = () => {
 				iat: number;
 			};
 			const now = Math.round(new Date().getTime() / 1000);
-			if (decodeRefreshToken.exp <= now) return;
+			if (decodeRefreshToken.exp <= now) {
+				clearLocalStorage();
+				clearInterval(interval);
+				return;
+			}
 			// se goi api refresh token khi thoi gian accessToken con lai 1/3.
 			// vi du thoi gian ton tai cua accessToken la 90 giay, thi se goi api refresh token khi thoi gian con lai la 30 giay
 			//thoi gian con lai cua accessToken: decodeAccessToken/exp - now
@@ -49,6 +55,7 @@ const RefreshToken = () => {
 					setRefreshTokenToLocalStorage(payload.data.refreshToken);
 				} catch (error) {
 					clearInterval(interval);
+					router.push("/login");
 				}
 			}
 		};
@@ -59,7 +66,7 @@ const RefreshToken = () => {
 		return () => {
 			clearInterval(interval);
 		};
-	}, [pathname]);
+	}, [pathname, router]);
 	return null;
 };
 
