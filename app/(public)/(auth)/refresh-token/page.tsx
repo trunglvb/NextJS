@@ -75,6 +75,8 @@ const RefreshTokenPage = () => {
 			return () => {
 				clearInterval(interval);
 			};
+		} else {
+			router.push("/");
 		}
 	}, [refreshTokenFromUrl, redirectPath, router]);
 	return null;

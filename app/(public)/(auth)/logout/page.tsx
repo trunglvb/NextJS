@@ -24,22 +24,24 @@ const Logout = () => {
 
 	useEffect(() => {
 		if (
-			ref.current ||
-			(refreshTokenFromUrl &&
-				refreshTokenFromUrl !== getRefreshTokenFromLocalStorage()) ||
-			(accessTokenFromUrl &&
-				accessTokenFromUrl !== getAccessTokenFromLocalStorage())
-		)
-			return;
-		ref.current = mutateAsync;
-		mutateAsync({
-			refreshToken: getRefreshTokenFromLocalStorage() as string,
-		}).then(() => {
-			router.push("/login");
-			setTimeout(() => {
-				ref.current = null;
-			}, 2000);
-		});
+			!ref.current &&
+			((refreshTokenFromUrl &&
+				refreshTokenFromUrl === getRefreshTokenFromLocalStorage()) ||
+				(accessTokenFromUrl &&
+					accessTokenFromUrl === getAccessTokenFromLocalStorage()))
+		) {
+			ref.current = mutateAsync;
+			mutateAsync({
+				refreshToken: getRefreshTokenFromLocalStorage() as string,
+			}).then(() => {
+				router.push("/login");
+				setTimeout(() => {
+					ref.current = null;
+				}, 2000);
+			});
+		} else {
+			router.push("/");
+		}
 	}, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl]);
 	return <div></div>;
 };

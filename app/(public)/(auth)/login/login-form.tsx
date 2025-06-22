@@ -18,8 +18,15 @@ import { useMutation } from "@tanstack/react-query";
 import authApiRequests from "@/apiRequests/auth";
 import { toast } from "sonner";
 import { handleErrorApi } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useAppContext } from "@/components/app-provider";
 
 export default function LoginForm() {
+	const { setIsAuth } = useAppContext();
+	const searchParams = useSearchParams();
+	const isClearTokens = searchParams.get("clearTokens");
+
 	const form = useForm<LoginBodyType>({
 		resolver: zodResolver(LoginBody),
 		defaultValues: {
@@ -27,6 +34,12 @@ export default function LoginForm() {
 			password: "",
 		},
 	});
+
+	useEffect(() => {
+		if (isClearTokens) {
+			setIsAuth(false);
+		}
+	}, [isClearTokens, setIsAuth]);
 
 	const loginMutation = useMutation({
 		mutationFn: authApiRequests.login,
