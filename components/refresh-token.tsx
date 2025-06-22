@@ -34,7 +34,7 @@ const RefreshToken = () => {
 				exp: number;
 				iat: number;
 			};
-			const now = Math.round(new Date().getTime() / 1000);
+			const now = new Date().getTime() / 1000 - 1;
 			if (decodeRefreshToken.exp <= now) {
 				clearLocalStorage();
 				clearInterval(interval);

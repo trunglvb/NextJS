@@ -10,6 +10,8 @@ export function middleware(request: NextRequest) {
 	const refreshToken = Boolean(request.cookies.get("refreshToken")?.value);
 	const accessToken = Boolean(request.cookies.get("accessToken")?.value);
 
+	//Route cache mac dinh cua Nextjs la 30s ke tu lan request gan nhat
+
 	// Chưa đăng nhập thì không cho vào private paths
 	if (
 		privatePaths.some((path) => pathname.startsWith(path)) &&
