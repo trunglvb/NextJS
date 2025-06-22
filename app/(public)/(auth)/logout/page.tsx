@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import authApiRequests from "@/apiRequests/auth";
+import { useAppContext } from "@/components/app-provider";
 import {
 	getAccessTokenFromLocalStorage,
 	getRefreshTokenFromLocalStorage,
@@ -10,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 
 const Logout = () => {
+	const { setIsAuth } = useAppContext();
 	const ref = useRef<any>(null);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -35,6 +37,7 @@ const Logout = () => {
 				refreshToken: getRefreshTokenFromLocalStorage() as string,
 			}).then(() => {
 				router.push("/login");
+				setIsAuth(false);
 				setTimeout(() => {
 					ref.current = null;
 				}, 2000);

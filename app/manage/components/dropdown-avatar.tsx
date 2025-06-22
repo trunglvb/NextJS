@@ -15,8 +15,10 @@ import authApiRequests from "@/apiRequests/auth";
 import accountApiRequests from "@/apiRequests/account";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAppContext } from "@/components/app-provider";
 
 export default function DropdownAvatar() {
+	const { setIsAuth } = useAppContext();
 	const router = useRouter();
 	const { data } = useQuery({
 		queryKey: ["account-me"],
@@ -32,6 +34,7 @@ export default function DropdownAvatar() {
 		await loginMutation.mutateAsync({
 			refreshToken: localStorage.getItem("refreshToken") as string,
 		});
+		setIsAuth(false);
 		toast.success("Đăng xuất thành công");
 		router.push("/");
 		// clearLocalStorage(); config tai http.ts

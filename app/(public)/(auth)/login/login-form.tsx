@@ -49,6 +49,7 @@ export default function LoginForm() {
 		try {
 			await loginMutation.mutateAsync(data);
 			toast.success("Đăng nhập thành công");
+			setIsAuth(true);
 		} catch (error: any) {
 			handleErrorApi({ error: error, setError: form.setError });
 		}
