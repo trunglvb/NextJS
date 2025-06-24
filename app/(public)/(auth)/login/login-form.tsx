@@ -18,7 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import authApiRequests from "@/apiRequests/auth";
 import { toast } from "sonner";
 import { handleErrorApi } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
 
@@ -26,6 +26,7 @@ export default function LoginForm() {
 	const { setIsAuth } = useAppContext();
 	const searchParams = useSearchParams();
 	const isClearTokens = searchParams.get("clearTokens");
+	const router = useRouter();
 
 	const form = useForm<LoginBodyType>({
 		resolver: zodResolver(LoginBody),
@@ -49,6 +50,7 @@ export default function LoginForm() {
 		try {
 			await loginMutation.mutateAsync(data);
 			toast.success("Đăng nhập thành công");
+			router.push("/");
 			setIsAuth(true);
 		} catch (error: any) {
 			handleErrorApi({ error: error, setError: form.setError });
