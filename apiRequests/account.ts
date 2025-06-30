@@ -1,8 +1,12 @@
 import http from "@/lib/http";
 import { ISuccessResponse } from "@/lib/type";
 import {
+	AccountListResType,
+	AccountResType,
 	AccountType,
 	ChangePasswordBodyType,
+	CreateEmployeeAccountBodyType,
+	UpdateEmployeeAccountBodyType,
 } from "@/schemaValidations/account.schema";
 import { get } from "http";
 
@@ -15,10 +19,10 @@ const accountApiRequests = {
 			"/accounts/change-password",
 			data
 		),
-	list: () => http.get<ISuccessResponse<AccountType[]>>("/accounts"),
-	addEmployee: (data: Omit<AccountType, "id">) =>
+	list: () => http.get<AccountListResType>("/accounts"),
+	addEmployee: (data: CreateEmployeeAccountBodyType) =>
 		http.post<ISuccessResponse<AccountType>>("/accounts", data),
-	editEmployee: (id: number, data: Omit<AccountType, "id">) =>
+	editEmployee: (id: number, data: UpdateEmployeeAccountBodyType) =>
 		http.put<ISuccessResponse<AccountType>>(`/accounts/${id}`, data),
 	getEmployeeDetail: (id: number) =>
 		http.get<ISuccessResponse<AccountType>>(`/accounts/${id}`),

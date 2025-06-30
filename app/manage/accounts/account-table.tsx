@@ -53,6 +53,8 @@ import {
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/pagination";
 import { MoreHorizontal, SortAscIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import accountApiRequests from "@/apiRequests/account";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -196,7 +198,6 @@ export default function AccountTable() {
 	const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(
 		null
 	);
-	const data: any[] = [];
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -208,8 +209,13 @@ export default function AccountTable() {
 		pageSize: PAGE_SIZE, //default page size
 	});
 
+	const { data: tableData } = useQuery({
+		queryKey: ["accounts"],
+		queryFn: accountApiRequests.list,
+	});
+
 	const table = useReactTable({
-		data,
+		data: tableData?.payload.data || [],
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -335,7 +341,8 @@ export default function AccountTable() {
 						<strong>
 							{table.getPaginationRowModel().rows.length}
 						</strong>{" "}
-						trong <strong>{data.length}</strong> kết quả
+						trong <strong>{tableData?.payload.data.length}</strong>{" "}
+						kết quả
 					</div>
 					<div>
 						<AutoPagination
