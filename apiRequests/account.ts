@@ -23,10 +23,10 @@ const accountApiRequests = {
 	addEmployee: (data: CreateEmployeeAccountBodyType) =>
 		http.post<ISuccessResponse<AccountType>>("/accounts", data),
 	editEmployee: (id: number, data: UpdateEmployeeAccountBodyType) =>
-		http.put<ISuccessResponse<AccountType>>(`/accounts/${id}`, data),
+		http.put<ISuccessResponse<AccountType>>(`/accounts/detail/${id}`, data),
 	getEmployeeDetail: (id: number) =>
-		http.get<ISuccessResponse<AccountType>>(`/accounts/${id}`),
+		http.get<ISuccessResponse<AccountType>>(`/accounts/detail/${id}`),
 	deleteEmployee: (id: number) =>
-		http.delete<ISuccessResponse<AccountType>>(`/accounts/${id}`),
+		http.delete<ISuccessResponse<AccountType>>(`/accounts/detail/${id}`),
 };
 export default accountApiRequests;

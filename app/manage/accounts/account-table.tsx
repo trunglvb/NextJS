@@ -53,8 +53,9 @@ import {
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/pagination";
 import { MoreHorizontal, SortAscIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import accountApiRequests from "@/apiRequests/account";
+import { toast } from "sonner";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -159,6 +160,20 @@ function AlertDialogDeleteAccount({
 	employeeDelete: AccountItem | null;
 	setEmployeeDelete: (value: AccountItem | null) => void;
 }) {
+	const queryClient = useQueryClient();
+	const deleteEmployeeMutation = useMutation({
+		mutationFn: accountApiRequests.deleteEmployee,
+		onSuccess: () => {
+			setEmployeeDelete(null);
+			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+		},
+	});
+
+	const handleDeleteEmployee = async () => {
+		if (!employeeDelete) return;
+		const res = await deleteEmployeeMutation.mutateAsync(employeeDelete.id);
+		toast.success(res?.payload.message);
+	};
 	return (
 		<AlertDialog
 			open={Boolean(employeeDelete)}
@@ -181,7 +196,9 @@ function AlertDialogDeleteAccount({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction>Continue</AlertDialogAction>
+					<AlertDialogAction onClick={handleDeleteEmployee}>
+						Continue
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

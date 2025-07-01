@@ -66,6 +66,11 @@ export default function AddEmployee() {
 		mutationFn: mediaRequests.upload,
 	});
 
+	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		setFile(file!);
+	};
+
 	const onSubmit = form.handleSubmit(
 		async (data: CreateEmployeeAccountBodyType) => {
 			try {
@@ -135,17 +140,7 @@ export default function AddEmployee() {
 												type="file"
 												accept="image/*"
 												ref={avatarInputRef}
-												onChange={(e) => {
-													const file =
-														e.target.files?.[0];
-													if (file) {
-														setFile(file);
-														field.onChange(
-															"http://localhost:4000/" +
-																file.name
-														);
-													}
-												}}
+												onChange={onFileChange}
 												className="hidden"
 											/>
 											<button
