@@ -16,11 +16,16 @@ import {
 } from "@/schemaValidations/account.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import accountApiRequests from "@/apiRequests/account";
+import { toast } from "sonner";
+import { mediaRequests } from "@/apiRequests/media";
+import { handleErrorApi } from "@/lib/utils";
 
 export default function EditEmployee({
 	id,
@@ -31,6 +36,7 @@ export default function EditEmployee({
 	setId: (value: number | undefined) => void;
 	onSubmitSuccess?: () => void;
 }) {
+	const queryClient = useQueryClient();
 	const [file, setFile] = useState<File | null>(null);
 	const avatarInputRef = useRef<HTMLInputElement | null>(null);
 	const form = useForm<UpdateEmployeeAccountBodyType>({
@@ -47,19 +53,72 @@ export default function EditEmployee({
 	const avatar = form.watch("avatar");
 	const name = form.watch("name");
 	const changePassword = form.watch("changePassword");
-	const previewAvatarFromFile = useMemo(() => {
-		if (file) {
-			return URL.createObjectURL(file);
+	const previewAvatarFromFile = file ? URL.createObjectURL(file) : avatar;
+
+	const { data } = useQuery({
+		queryKey: ["accounts", id],
+		queryFn: () => accountApiRequests.getEmployeeDetail(id as number),
+		enabled: Boolean(id),
+	});
+
+	const employee = data ? data?.payload?.data : null;
+
+	useEffect(() => {
+		if (employee) {
+			form.reset({
+				name: employee.name,
+				email: employee.email,
+				avatar: employee.avatar as string,
+			});
 		}
-		return avatar;
-	}, [file, avatar]);
+	}, [employee, form]);
+
+	const updateEmployeeMutation = useMutation({
+		mutationFn: (data: UpdateEmployeeAccountBodyType) =>
+			accountApiRequests.editEmployee(id as number, data),
+		onSuccess: (res) => {
+			reset();
+			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			toast.success(res?.payload.message);
+		},
+	});
+
+	const reset = () => {
+		setFile(null);
+		setId(undefined);
+		form.reset();
+	};
+
+	const onSubmit = form.handleSubmit(
+		async (data: UpdateEmployeeAccountBodyType) => {
+			try {
+				let imageUrl = avatar;
+				if (file) {
+					const formData = new FormData();
+					formData.append("file", file);
+					const fileResponse = await mediaRequests.upload(formData);
+					imageUrl = fileResponse.payload?.data;
+				}
+				await updateEmployeeMutation.mutateAsync({
+					name: data.name,
+					email: data.email,
+					avatar: imageUrl,
+					changePassword: data.changePassword,
+					password: data.password,
+					confirmPassword: data.confirmPassword,
+				});
+			} catch (error) {
+				handleErrorApi({ error: error, setError: form.setError });
+			}
+		}
+	);
 
 	return (
 		<Dialog
 			open={Boolean(id)}
 			onOpenChange={(value) => {
 				if (!value) {
-					setId(undefined);
+					reset();
 				}
 			}}
 		>
@@ -75,6 +134,7 @@ export default function EditEmployee({
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="edit-employee-form"
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4 py-4">
 							<FormField

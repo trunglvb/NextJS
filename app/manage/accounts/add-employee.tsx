@@ -51,8 +51,6 @@ export default function AddEmployee() {
 		return avatar;
 	}, [file, avatar]);
 
-	console.log("avatar", avatar?.trim());
-
 	const handleAddEmployee = useMutation({
 		mutationFn: accountApiRequests.addEmployee,
 		onSuccess: () => {
