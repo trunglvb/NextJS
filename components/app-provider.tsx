@@ -34,7 +34,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 		if (isAuth) {
 			setIsAuthState(true);
 		} else {
-			setIsAuth(false);
+			setIsAuthState(false);
 			clearLocalStorage();
 		}
 	};

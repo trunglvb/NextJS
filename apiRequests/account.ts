@@ -2,13 +2,11 @@ import http from "@/lib/http";
 import { ISuccessResponse } from "@/lib/type";
 import {
 	AccountListResType,
-	AccountResType,
 	AccountType,
 	ChangePasswordBodyType,
 	CreateEmployeeAccountBodyType,
 	UpdateEmployeeAccountBodyType,
 } from "@/schemaValidations/account.schema";
-import { get } from "http";
 
 const accountApiRequests = {
 	getMe: () => http.get<ISuccessResponse<AccountType>>("/accounts/me"),

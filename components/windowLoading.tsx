@@ -46,13 +46,13 @@ const spinnerComponents = {
 
 export function WindowLoading({
 	isLoading,
-	spinner = "clip",
+	spinner = "ring",
 	message = "Loading...",
 	size = 50,
 	color = "#3b82f6",
 	fullScreen = true,
 	className,
-	overlayOpacity = 0.3,
+	overlayOpacity = 0.5,
 	blurBackground = false,
 }: WindowLoadingProps) {
 	if (!isLoading) return null;
@@ -72,7 +72,7 @@ export function WindowLoading({
 
 	return (
 		<div className={overlayClasses} style={overlayStyle}>
-			<div className="flex flex-col items-center gap-4 p-6 rounded-lg bg-white shadow-lg border">
+			<div className="flex flex-col items-center gap-4 p-6 rounded-lg bg-white shadow-lg border min-w-[300px]">
 				<SpinnerComponent
 					size={size}
 					color={color}
