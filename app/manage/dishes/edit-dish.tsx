@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
 	Form,
@@ -36,6 +36,10 @@ import {
 } from "@/schemaValidations/dish.schema";
 import { DishStatus, DishStatusValues } from "@/constants/type";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dishApiRequests from "@/apiRequests/dish";
+import { toast } from "sonner";
+import { mediaRequests } from "@/apiRequests/media";
 
 export default function EditDish({
 	id,
@@ -46,6 +50,7 @@ export default function EditDish({
 	setId: (value: number | undefined) => void;
 	onSubmitSuccess?: () => void;
 }) {
+	const queryClient = useQueryClient();
 	const [file, setFile] = useState<File | null>(null);
 	const imageInputRef = useRef<HTMLInputElement | null>(null);
 	const form = useForm<UpdateDishBodyType>({
@@ -61,6 +66,61 @@ export default function EditDish({
 	const image = form.watch("image");
 	const name = form.watch("name");
 	const previewAvatarFromFile = file ? URL.createObjectURL(file) : image;
+
+	const { data } = useQuery({
+		queryKey: ["dishes", id],
+		queryFn: () => dishApiRequests.get(id as number),
+		enabled: Boolean(id),
+	});
+
+	const dish = data ? data?.payload.data : null;
+
+	useEffect(() => {
+		if (dish) {
+			form.reset({
+				name: dish.name,
+				description: dish.description,
+				price: dish.price,
+				image: dish.image!,
+				status: dish.status,
+			});
+		}
+	}, [dish, form]);
+
+	const updateDishMutation = useMutation({
+		mutationFn: (data: UpdateDishBodyType) =>
+			dishApiRequests.update(id as number, data),
+		onSuccess: (res) => {
+			reset();
+			onSubmitSuccess?.();
+			toast.success(res.payload.message);
+			queryClient.invalidateQueries({ queryKey: ["dishes"] });
+		},
+	});
+
+	const onSubmit = form.handleSubmit(async (data: UpdateDishBodyType) => {
+		try {
+			let imageUrl = image;
+			if (file) {
+				const formData = new FormData();
+				formData.append("file", file);
+				const fileResponse = await mediaRequests.upload(formData);
+				imageUrl = fileResponse.payload?.data;
+			}
+			await updateDishMutation.mutateAsync({
+				...data,
+				image: imageUrl,
+			});
+		} catch (error) {
+			handleErrorApi({ error: error, setError: form.setError });
+		}
+	});
+
+	const reset = () => {
+		setFile(null);
+		setId(undefined);
+		form.reset();
+	};
 
 	return (
 		<Dialog
@@ -83,6 +143,7 @@ export default function EditDish({
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="edit-dish-form"
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4 py-4">
 							<FormField

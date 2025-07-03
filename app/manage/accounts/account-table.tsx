@@ -161,6 +161,7 @@ function AlertDialogDeleteAccount({
 	setEmployeeDelete: (value: AccountItem | null) => void;
 }) {
 	const queryClient = useQueryClient();
+
 	const deleteEmployeeMutation = useMutation({
 		mutationFn: accountApiRequests.deleteEmployee,
 		onSuccess: () => {

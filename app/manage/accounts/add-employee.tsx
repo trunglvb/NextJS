@@ -54,8 +54,8 @@ export default function AddEmployee() {
 	const handleAddEmployee = useMutation({
 		mutationFn: accountApiRequests.addEmployee,
 		onSuccess: () => {
+			reset();
 			setOpen(false);
-			form.reset();
 			queryClient.invalidateQueries({ queryKey: ["accounts"] });
 		},
 	});
@@ -67,6 +67,11 @@ export default function AddEmployee() {
 	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 		setFile(file!);
+	};
+
+	const reset = () => {
+		setFile(null);
+		form.reset();
 	};
 
 	const onSubmit = form.handleSubmit(

@@ -50,6 +50,9 @@ import AutoPagination from "@/components/pagination";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import dishApiRequests from "@/apiRequests/dish";
+import { toast } from "sonner";
 
 type DishItem = DishListResType["data"][0];
 
@@ -163,6 +166,19 @@ function AlertDialogDeleteDish({
 	dishDelete: DishItem | null;
 	setDishDelete: (value: DishItem | null) => void;
 }) {
+	const queryClient = useQueryClient();
+	const deleteDishMutation = useMutation({
+		mutationFn: dishApiRequests.delete,
+		onSuccess: () => {
+			setDishDelete(null);
+			queryClient.invalidateQueries({ queryKey: ["dishes"] });
+		},
+	});
+	const handleDeleteEmployee = async () => {
+		if (!dishDelete) return;
+		const res = await deleteDishMutation.mutateAsync(dishDelete.id);
+		toast.success(res?.payload.message);
+	};
 	return (
 		<AlertDialog
 			open={Boolean(dishDelete)}
@@ -185,7 +201,9 @@ function AlertDialogDeleteDish({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction>Continue</AlertDialogAction>
+					<AlertDialogAction onClick={handleDeleteEmployee}>
+						Continue
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
@@ -211,8 +229,13 @@ export default function DishTable() {
 		pageSize: PAGE_SIZE, //default page size
 	});
 
+	const { data: dishes } = useQuery({
+		queryKey: ["dishes"],
+		queryFn: dishApiRequests.list,
+	});
+
 	const table = useReactTable({
-		data,
+		data: dishes?.payload.data || [],
 		columns,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,

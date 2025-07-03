@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle, Upload } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { use, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
 	Form,
@@ -22,7 +22,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getVietnameseDishStatus } from "@/lib/utils";
+import { getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
 import {
 	CreateDishBody,
 	CreateDishBodyType,
@@ -36,8 +36,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import dishApiRequests from "@/apiRequests/dish";
+import { toast } from "sonner";
+import { mediaRequests } from "@/apiRequests/media";
 
 export default function AddDish() {
+	const queryClient = useQueryClient();
 	const [file, setFile] = useState<File | null>(null);
 	const [open, setOpen] = useState(false);
 	const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -47,18 +52,49 @@ export default function AddDish() {
 			name: "",
 			description: "",
 			price: 0,
-			image: "",
+			image: undefined,
 			status: DishStatus.Unavailable,
 		},
 	});
 	const image = form.watch("image");
 	const name = form.watch("name");
-	const previewAvatarFromFile = useMemo(() => {
-		if (file) {
-			return URL.createObjectURL(file);
+	const previewAvatarFromFile = file ? URL.createObjectURL(file) : image;
+
+	console.log("iamge", image);
+	console.log("file", file);
+
+	const handleAddDish = useMutation({
+		mutationFn: dishApiRequests.create,
+		onSuccess: (res) => {
+			setOpen(false);
+			form.reset();
+			queryClient.invalidateQueries({ queryKey: ["dishes"] });
+			toast.success(res.payload.message);
+		},
+	});
+
+	const onSubmit = form.handleSubmit(async (data: CreateDishBodyType) => {
+		try {
+			let imageUrl = image;
+			if (file) {
+				const formData = new FormData();
+				formData.append("file", file);
+				const fileResponse = await mediaRequests.upload(formData);
+				imageUrl = fileResponse.payload?.data;
+			}
+			await handleAddDish.mutateAsync({
+				...data,
+				image: imageUrl,
+			});
+		} catch (error) {
+			handleErrorApi({ error, setError: form.setError });
 		}
-		return image;
-	}, [file, image]);
+	});
+
+	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		setFile(file!);
+	};
 
 	return (
 		<Dialog onOpenChange={setOpen} open={open}>
@@ -79,6 +115,7 @@ export default function AddDish() {
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="add-dish-form"
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4 py-4">
 							<FormField
@@ -99,18 +136,9 @@ export default function AddDish() {
 												type="file"
 												accept="image/*"
 												ref={imageInputRef}
-												onChange={(e) => {
-													const file =
-														e.target.files?.[0];
-													if (file) {
-														setFile(file);
-														field.onChange(
-															"http://localhost:3000/" +
-																file.name
-														);
-													}
-												}}
+												onChange={onFileChange}
 												className="hidden"
+												value={field.value}
 											/>
 											<button
 												className="flex aspect-square w-[100px] items-center justify-center rounded-md border border-dashed"
@@ -125,6 +153,7 @@ export default function AddDish() {
 												</span>
 											</button>
 										</div>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
