@@ -74,6 +74,8 @@ export default function AddEmployee() {
 		form.reset();
 	};
 
+	console.log("value", form.getValues("avatar"));
+
 	const onSubmit = form.handleSubmit(
 		async (data: CreateEmployeeAccountBodyType) => {
 			try {

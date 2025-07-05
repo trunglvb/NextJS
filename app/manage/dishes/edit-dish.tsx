@@ -65,7 +65,13 @@ export default function EditDish({
 	});
 	const image = form.watch("image");
 	const name = form.watch("name");
-	const previewAvatarFromFile = file ? URL.createObjectURL(file) : image;
+
+	const previewAvatarFromFile = useMemo(() => {
+		if (file) {
+			return URL.createObjectURL(file);
+		}
+		return image;
+	}, [file, image]);
 
 	const { data } = useQuery({
 		queryKey: ["dishes", id],
@@ -116,6 +122,11 @@ export default function EditDish({
 		}
 	});
 
+	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		setFile(file!);
+	};
+
 	const reset = () => {
 		setFile(null);
 		setId(undefined);
@@ -165,15 +176,8 @@ export default function EditDish({
 												accept="image/*"
 												ref={imageInputRef}
 												onChange={(e) => {
-													const file =
-														e.target.files?.[0];
-													if (file) {
-														setFile(file);
-														field.onChange(
-															"http://localhost:3000/" +
-																file.name
-														);
-													}
+													onFileChange(e);
+													field.onChange(e);
 												}}
 												className="hidden"
 											/>

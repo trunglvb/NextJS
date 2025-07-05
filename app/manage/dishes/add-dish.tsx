@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle, Upload } from "lucide-react";
-import { use, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
 	Form,
@@ -58,7 +58,12 @@ export default function AddDish() {
 	});
 	const image = form.watch("image");
 	const name = form.watch("name");
-	const previewAvatarFromFile = file ? URL.createObjectURL(file) : image;
+	const previewAvatarFromFile = useMemo(() => {
+		if (file) {
+			return URL.createObjectURL(file);
+		}
+		return image;
+	}, [file, image]);
 
 	const handleAddDish = useMutation({
 		mutationFn: dishApiRequests.create,
@@ -133,9 +138,11 @@ export default function AddDish() {
 												type="file"
 												accept="image/*"
 												ref={imageInputRef}
-												onChange={onFileChange}
 												className="hidden"
-												value={field.value}
+												onChange={(e) => {
+													onFileChange(e);
+													field.onChange(e);
+												}}
 											/>
 											<button
 												className="flex aspect-square w-[100px] items-center justify-center rounded-md border border-dashed"
