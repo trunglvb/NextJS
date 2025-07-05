@@ -60,9 +60,6 @@ export default function AddDish() {
 	const name = form.watch("name");
 	const previewAvatarFromFile = file ? URL.createObjectURL(file) : image;
 
-	console.log("iamge", image);
-	console.log("file", file);
-
 	const handleAddDish = useMutation({
 		mutationFn: dishApiRequests.create,
 		onSuccess: (res) => {
@@ -126,7 +123,7 @@ export default function AddDish() {
 										<div className="flex gap-2 items-start justify-start">
 											<Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
 												<AvatarImage
-													src={previewAvatarFromFile}
+													src={previewAvatarFromFile!}
 												/>
 												<AvatarFallback className="rounded-none">
 													{name || "Avatar"}
