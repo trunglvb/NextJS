@@ -32,7 +32,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dishApiRequests from "@/apiRequests/dish";
 import { toast } from "sonner";
 import DataTable from "@/components/table";
-import { WindowLoading } from "@/components/windowLoading";
 
 type DishItem = DishListResType["data"][0];
 

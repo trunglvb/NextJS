@@ -36,6 +36,7 @@ interface DataTableProps<T> {
 	pageSize?: number;
 	useRadio?: false;
 	onChange?: (value: any) => void;
+	searchKey?: keyof T;
 }
 
 export default function DataTable<T>({
@@ -47,6 +48,7 @@ export default function DataTable<T>({
 	pathname = "",
 	pageSize = 10,
 	useRadio = false,
+	searchKey,
 	onChange,
 }: DataTableProps<T>) {
 	const searchParam = useSearchParams();
@@ -110,13 +112,16 @@ export default function DataTable<T>({
 					<Input
 						placeholder={searchPlaceholder}
 						value={
-							(table
-								.getColumn("name")
-								?.getFilterValue() as string) ?? ""
+							searchKey
+								? (table
+										?.getColumn(searchKey as string)
+										?.getFilterValue() as string)
+								: ""
 						}
 						onChange={(event) =>
+							searchKey &&
 							table
-								.getColumn("name")
+								?.getColumn(searchKey as string)
 								?.setFilterValue(event.target.value)
 						}
 						className="max-w-sm"

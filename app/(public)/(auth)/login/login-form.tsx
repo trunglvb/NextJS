@@ -39,8 +39,9 @@ export default function LoginForm() {
 	useEffect(() => {
 		if (isClearTokens) {
 			setIsAuth(false);
+			router.push("/logout");
 		}
-	}, [isClearTokens, setIsAuth]);
+	}, [isClearTokens, setIsAuth, router]);
 
 	const loginMutation = useMutation({
 		mutationFn: authApiRequests.login,
