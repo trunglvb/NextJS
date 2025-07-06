@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						<DropdownAvatar />
 					</div>
 				</header>
-				{children}
+				<div className="my-4">{children}</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -46,10 +46,10 @@ const spinnerComponents = {
 
 export function WindowLoading({
 	isLoading,
-	spinner = "ring",
+	spinner = "scale",
 	message = "Loading...",
 	size = 50,
-	color = "#3b82f6",
+	color = "#0a0a0a",
 	fullScreen = true,
 	className,
 	overlayOpacity = 0.5,
