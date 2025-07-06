@@ -45,7 +45,6 @@ interface ISidebarProps {
 export function AppSidebar({ items }: ISidebarProps) {
 	const pathName = usePathname();
 
-	console.log(pathName);
 	return (
 		<Sidebar>
 			<SidebarContent>

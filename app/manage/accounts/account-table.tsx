@@ -203,7 +203,7 @@ export default function AccountTable() {
 		null
 	);
 
-	const { data: tableData, isFetching } = useQuery({
+	const { data: tableData } = useQuery({
 		queryKey: ["accounts"],
 		queryFn: accountApiRequests.list,
 	});
@@ -233,7 +233,6 @@ export default function AccountTable() {
 					pathname="/manage/accounts"
 					AddComponent={AddEmployee}
 				/>
-				<WindowLoading isLoading={isFetching} />
 			</div>
 		</AccountTableContext.Provider>
 	);

@@ -194,7 +194,7 @@ export default function DishTable() {
 	const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
 	const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
 
-	const { data: dishes, isFetching } = useQuery({
+	const { data: dishes } = useQuery({
 		queryKey: ["dishes"],
 		queryFn: dishApiRequests.list,
 	});
@@ -215,7 +215,6 @@ export default function DishTable() {
 					pathname="/manage/dishes"
 					AddComponent={AddDish}
 				/>
-				<WindowLoading isLoading={isFetching} />
 			</div>
 		</DishTableContext.Provider>
 	);
