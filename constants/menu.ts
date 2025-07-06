@@ -1,44 +1,17 @@
-import {
-	Home,
-	LineChart,
-	ShoppingCart,
-	Users2,
-	Salad,
-	Table,
-} from "lucide-react";
+import { IconKey } from "@/components/app-sidebar";
 
-const menuItems = [
-	{
-		title: "Trang chủ",
-		Icon: Home,
-		href: "/manage/dashboard",
-	},
-	{
-		title: "Đơn hàng",
-		Icon: ShoppingCart,
-		href: "/manage/orders",
-	},
-	{
-		title: "Bàn ăn",
-		Icon: Table,
-		href: "/manage/tables",
-	},
-	{
-		title: "Món ăn",
-		Icon: Salad,
-		href: "/manage/dishes",
-	},
+export interface IMenuItem {
+	title: string;
+	icon: IconKey;
+	href: string;
+}
 
-	{
-		title: "Phân tích",
-		Icon: LineChart,
-		href: "/manage/analytics",
-	},
-	{
-		title: "Nhân viên",
-		Icon: Users2,
-		href: "/manage/accounts",
-	},
+const menuItems: IMenuItem[] = [
+	{ title: "Trang chủ", icon: "home", href: "/manage/dashboard" },
+	{ title: "Đơn hàng", icon: "cart", href: "/manage/orders" },
+	{ title: "Bàn ăn", icon: "table", href: "/manage/tables" },
+	{ title: "Món ăn", icon: "salad", href: "/manage/dishes" },
+	{ title: "Phân tích", icon: "chart", href: "/manage/analytics" },
+	{ title: "Nhân viên", icon: "users", href: "/manage/accounts" },
 ];
-
 export default menuItems;

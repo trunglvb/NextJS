@@ -23,15 +23,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import {
 	AccountListResType,
 	AccountType,
@@ -39,7 +30,7 @@ import {
 import AddEmployee from "@/app/manage/accounts/add-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditEmployee from "@/app/manage/accounts/edit-employee";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -50,13 +41,12 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useSearchParams } from "next/navigation";
-import AutoPagination from "@/components/pagination";
 import { MoreHorizontal, SortAscIcon } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import accountApiRequests from "@/apiRequests/account";
 import { toast } from "sonner";
 import DataTable from "@/components/table";
+import { WindowLoading } from "@/components/windowLoading";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -206,61 +196,17 @@ function AlertDialogDeleteAccount({
 		</AlertDialog>
 	);
 }
-// Số lượng item trên 1 trang
-const PAGE_SIZE = 10;
+
 export default function AccountTable() {
-	const searchParam = useSearchParams();
-	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
-	const pageIndex = page - 1;
-	// const params = Object.fromEntries(searchParam.entries())
 	const [employeeIdEdit, setEmployeeIdEdit] = useState<number | undefined>();
 	const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(
 		null
 	);
-	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-		{}
-	);
-	const [rowSelection, setRowSelection] = useState({});
-	const [pagination, setPagination] = useState({
-		pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-		pageSize: PAGE_SIZE, //default page size
-	});
 
-	const { data: tableData } = useQuery({
+	const { data: tableData, isFetching } = useQuery({
 		queryKey: ["accounts"],
 		queryFn: accountApiRequests.list,
 	});
-
-	const table = useReactTable({
-		data: tableData?.payload.data || [],
-		columns,
-		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
-		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		onColumnVisibilityChange: setColumnVisibility,
-		onRowSelectionChange: setRowSelection,
-		onPaginationChange: setPagination,
-		autoResetPageIndex: false,
-		state: {
-			sorting,
-			columnFilters,
-			columnVisibility,
-			rowSelection,
-			pagination,
-		},
-	});
-
-	useEffect(() => {
-		table.setPagination({
-			pageIndex,
-			pageSize: PAGE_SIZE,
-		});
-	}, [table, pageIndex]);
 
 	return (
 		<AccountTableContext.Provider
@@ -287,6 +233,7 @@ export default function AccountTable() {
 					pathname="/manage/accounts"
 					AddComponent={AddEmployee}
 				/>
+				<WindowLoading isLoading={isFetching} />
 			</div>
 		</AccountTableContext.Provider>
 	);

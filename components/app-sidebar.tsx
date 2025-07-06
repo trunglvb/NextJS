@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Sidebar,
 	SidebarContent,
@@ -8,12 +10,42 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import menuItems from "@/constants/menu";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+	Home,
+	ShoppingCart,
+	Table,
+	Salad,
+	LineChart,
+	Users2,
+} from "lucide-react";
 
-// Menu items.
+const iconMap = {
+	home: Home,
+	cart: ShoppingCart,
+	table: Table,
+	salad: Salad,
+	chart: LineChart,
+	users: Users2,
+};
 
-export function AppSidebar() {
+export type IconKey = keyof typeof iconMap;
+
+interface IMenuItems {
+	title: string;
+	icon: IconKey;
+	href: string;
+}
+interface ISidebarProps {
+	items: IMenuItems[];
+}
+
+export function AppSidebar({ items }: ISidebarProps) {
+	const pathName = usePathname();
+
+	console.log(pathName);
 	return (
 		<Sidebar>
 			<SidebarContent>
@@ -21,16 +53,22 @@ export function AppSidebar() {
 					<SidebarGroupLabel>Quản lý quán ăn</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{menuItems.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<Link href={item.href}>
-											<item.Icon />
-											<span>{item.title}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							{items.map((item) => {
+								const Icon = iconMap[item.icon];
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton
+											asChild
+											isActive={item.href === pathName}
+										>
+											<Link href={item.href}>
+												<Icon />
+												<span>{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
