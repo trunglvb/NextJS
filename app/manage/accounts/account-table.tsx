@@ -231,6 +231,8 @@ export default function AccountTable() {
 					data={tableData?.payload.data || []}
 					columns={columns}
 					pathname="/manage/accounts"
+					searchable
+					searchKey="name"
 					AddComponent={AddEmployee}
 				/>
 			</div>

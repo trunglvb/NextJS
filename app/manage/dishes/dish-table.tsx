@@ -209,6 +209,8 @@ export default function DishTable() {
 					setDishDelete={setDishDelete}
 				/>
 				<DataTable
+					searchable
+					searchKey="name"
 					data={dishes?.payload.data || []}
 					columns={columns}
 					pathname="/manage/dishes"

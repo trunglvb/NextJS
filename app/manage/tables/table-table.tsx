@@ -22,11 +22,13 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getVietnameseTableStatus } from "@/lib/utils";
+import { getTableLink, getVietnameseTableStatus } from "@/lib/utils";
 import { TableListResType } from "@/schemaValidations/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
 import DataTable from "@/components/table";
+import { useQuery } from "@tanstack/react-query";
+import { tableApiRequests } from "@/apiRequests/tables";
 
 type TableItem = TableListResType["data"][0];
 
@@ -67,7 +69,14 @@ export const columns: ColumnDef<TableItem>[] = [
 	{
 		accessorKey: "token",
 		header: "QR Code",
-		cell: ({ row }) => <div>{row.getValue("number")}</div>,
+		cell: ({ row }) => (
+			<div>
+				{getTableLink({
+					token: row.getValue("token"),
+					tableNumber: row.getValue("number"),
+				})}
+			</div>
+		),
 	},
 	{
 		id: "actions",
@@ -147,6 +156,11 @@ export default function TableTable() {
 	const [tableIdEdit, setTableIdEdit] = useState<number | undefined>();
 	const [tableDelete, setTableDelete] = useState<TableItem | null>(null);
 
+	const { data: tables } = useQuery({
+		queryKey: ["tables"],
+		queryFn: tableApiRequests.list,
+	});
+
 	return (
 		<TableTableContext.Provider
 			value={{ tableIdEdit, setTableIdEdit, tableDelete, setTableDelete }}
@@ -158,8 +172,10 @@ export default function TableTable() {
 					setTableDelete={setTableDelete}
 				/>
 				<DataTable
+					searchable
+					searchKey="number"
 					searchPlaceholder="Lọc số bàn"
-					data={[]}
+					data={tables?.payload.data || []}
 					columns={columns}
 					pathname="/manage/tables"
 					AddComponent={AddTable}

@@ -42,7 +42,7 @@ interface DataTableProps<T> {
 export default function DataTable<T>({
 	data = [],
 	columns,
-	searchable = true,
+	searchable = false,
 	searchPlaceholder = "Lọc tên",
 	AddComponent,
 	pathname = "",
@@ -54,6 +54,7 @@ export default function DataTable<T>({
 	const searchParam = useSearchParams();
 	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
 	const pageIndex = page - 1;
+	const [search, setSearch] = useState("");
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -111,19 +112,13 @@ export default function DataTable<T>({
 				{searchable && (
 					<Input
 						placeholder={searchPlaceholder}
-						value={
-							searchKey
-								? (table
-										?.getColumn(searchKey as string)
-										?.getFilterValue() as string)
-								: ""
-						}
-						onChange={(event) =>
-							searchKey &&
+						value={search}
+						onChange={(event) => {
 							table
 								?.getColumn(searchKey as string)
-								?.setFilterValue(event.target.value)
-						}
+								?.setFilterValue(event.target.value);
+							setSearch(event.target.value);
+						}}
 						className="max-w-sm"
 					/>
 				)}

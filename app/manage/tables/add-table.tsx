@@ -21,7 +21,7 @@ import {
 	FormItem,
 	FormMessage,
 } from "@/components/ui/form";
-import { getVietnameseTableStatus } from "@/lib/utils";
+import { getVietnameseTableStatus, handleErrorApi } from "@/lib/utils";
 import {
 	CreateTableBody,
 	CreateTableBodyType,
@@ -34,8 +34,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { tableApiRequests } from "@/apiRequests/tables";
+import { toast } from "sonner";
 
 export default function AddTable() {
+	const queryClient = useQueryClient();
 	const [open, setOpen] = useState(false);
 	const form = useForm<CreateTableBodyType>({
 		resolver: zodResolver(CreateTableBody),
@@ -45,6 +49,24 @@ export default function AddTable() {
 			status: TableStatus.Hidden,
 		},
 	});
+
+	const handleAdd = useMutation({
+		mutationFn: tableApiRequests.add,
+		onSuccess: (res) => {
+			setOpen(false);
+			form.reset();
+			queryClient.invalidateQueries({ queryKey: ["tables"] });
+			toast.success(res.payload.message);
+		},
+		onError: (error) => {
+			handleErrorApi({ error: error, setError: form.setError });
+		},
+	});
+
+	const onSubmit = form.handleSubmit((data) => {
+		handleAdd.mutate(data);
+	});
+
 	return (
 		<Dialog onOpenChange={setOpen} open={open}>
 			<DialogTrigger asChild>
@@ -67,6 +89,7 @@ export default function AddTable() {
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="add-table-form"
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4 py-4">
 							<FormField
