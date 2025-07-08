@@ -29,6 +29,7 @@ import AddTable from "@/app/manage/tables/add-table";
 import DataTable from "@/components/table";
 import { useQuery } from "@tanstack/react-query";
 import { tableApiRequests } from "@/apiRequests/tables";
+import QRCodeTable from "@/components/qrcode-table";
 
 type TableItem = TableListResType["data"][0];
 
@@ -71,10 +72,10 @@ export const columns: ColumnDef<TableItem>[] = [
 		header: "QR Code",
 		cell: ({ row }) => (
 			<div>
-				{getTableLink({
-					token: row.getValue("token"),
-					tableNumber: row.getValue("number"),
-				})}
+				<QRCodeTable
+					token={row.getValue("token")}
+					tableNumber={row.getValue("number")}
+				/>
 			</div>
 		),
 	},
