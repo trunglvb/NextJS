@@ -33,16 +33,21 @@ import {
 import { TableStatus, TableStatusValues } from "@/constants/type";
 import { Switch } from "@/components/ui/switch";
 import Link from "next/link";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { tableApiRequests } from "@/apiRequests/tables";
+import { useEffect } from "react";
+import QRCodeTable from "@/components/qrcode-table";
+import { toast } from "sonner";
 
 export default function EditTable({
 	id,
 	setId,
-	onSubmitSuccess,
 }: {
 	id?: number | undefined;
 	setId: (value: number | undefined) => void;
 	onSubmitSuccess?: () => void;
 }) {
+	const queryClient = useQueryClient();
 	const form = useForm<UpdateTableBodyType>({
 		resolver: zodResolver(UpdateTableBody),
 		defaultValues: {
@@ -51,22 +56,57 @@ export default function EditTable({
 			changeToken: false,
 		},
 	});
-	const tableNumber = 0;
+
+	const { data } = useQuery({
+		queryKey: ["tables", id],
+		queryFn: () => tableApiRequests.details(id as number),
+		enabled: Boolean(id),
+	});
+
+	const tableDetails = data?.payload.data;
+
+	useEffect(() => {
+		if (tableDetails) {
+			form.reset({
+				capacity: tableDetails.capacity,
+				status: tableDetails.status,
+				changeToken: form.getValues("changeToken"),
+			});
+		}
+	}, [form, tableDetails]);
+
+	const handleUpdate = useMutation({
+		mutationFn: (data: UpdateTableBodyType) =>
+			tableApiRequests.update(data, id as number),
+		onSuccess: (res) => {
+			reset();
+			toast.success(res.payload.message);
+			queryClient.invalidateQueries({ queryKey: ["tables"] });
+		},
+	});
+
+	const onSubmit = form.handleSubmit((data) => {
+		handleUpdate.mutate(data);
+	});
+
+	const reset = () => {
+		setId(undefined);
+		form.reset();
+	};
 
 	return (
 		<Dialog
 			open={Boolean(id)}
 			onOpenChange={(value) => {
 				if (!value) {
-					setId(undefined);
+					reset();
 				}
 			}}
 		>
 			<DialogContent
 				className="sm:max-w-[600px] max-h-screen overflow-auto"
 				onCloseAutoFocus={() => {
-					form.reset();
-					setId(undefined);
+					reset();
 				}}
 			>
 				<DialogHeader>
@@ -77,6 +117,7 @@ export default function EditTable({
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="edit-table-form"
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4 py-4">
 							<FormItem>
@@ -87,7 +128,7 @@ export default function EditTable({
 											id="number"
 											type="number"
 											className="w-full"
-											value={tableNumber}
+											value={tableDetails?.number || 0}
 											readOnly
 										/>
 										<FormMessage />
@@ -130,7 +171,7 @@ export default function EditTable({
 													onValueChange={
 														field.onChange
 													}
-													defaultValue={field.value}
+													value={field.value}
 												>
 													<FormControl>
 														<SelectTrigger>
@@ -190,7 +231,16 @@ export default function EditTable({
 							<FormItem>
 								<div className="grid grid-cols-4 items-center justify-items-start gap-4">
 									<Label>QR Code</Label>
-									<div className="col-span-3 w-full space-y-2"></div>
+									<div className="col-span-3 w-full space-y-2">
+										<QRCodeTable
+											token={
+												tableDetails?.token as string
+											}
+											tableNumber={
+												tableDetails?.number as number
+											}
+										/>
+									</div>
 								</div>
 							</FormItem>
 							<FormItem>
@@ -199,15 +249,17 @@ export default function EditTable({
 									<div className="col-span-3 w-full space-y-2">
 										<Link
 											href={getTableLink({
-												token: "123123123",
-												tableNumber: tableNumber,
+												token: tableDetails?.token as string,
+												tableNumber:
+													tableDetails?.number as number,
 											})}
 											target="_blank"
 											className="break-all"
 										>
 											{getTableLink({
-												token: "123123123",
-												tableNumber: tableNumber,
+												token: tableDetails?.token as string,
+												tableNumber:
+													tableDetails?.number as number,
 											})}
 										</Link>
 									</div>

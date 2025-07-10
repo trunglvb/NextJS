@@ -138,7 +138,7 @@ export default function EditDish({
 			open={Boolean(id)}
 			onOpenChange={(value) => {
 				if (!value) {
-					setId(undefined);
+					reset();
 				}
 			}}
 		>
