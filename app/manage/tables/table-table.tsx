@@ -27,9 +27,10 @@ import { TableListResType } from "@/schemaValidations/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
 import DataTable from "@/components/table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { tableApiRequests } from "@/apiRequests/tables";
 import QRCodeTable from "@/components/qrcode-table";
+import { toast } from "sonner";
 
 type TableItem = TableListResType["data"][0];
 
@@ -123,6 +124,21 @@ function AlertDialogDeleteTable({
 	tableDelete: TableItem | null;
 	setTableDelete: (value: TableItem | null) => void;
 }) {
+	const queryClient = useQueryClient();
+	const deleteMutation = useMutation({
+		mutationFn: tableApiRequests.delete,
+		onSuccess: (res) => {
+			setTableDelete(null);
+			queryClient.invalidateQueries({ queryKey: ["tables"] });
+			toast.success(res?.payload.message);
+		},
+	});
+
+	const onDelete = () => {
+		if (!tableDelete) return;
+		deleteMutation.mutate(tableDelete?.number);
+	};
+
 	return (
 		<AlertDialog
 			open={Boolean(tableDelete)}
@@ -145,7 +161,9 @@ function AlertDialogDeleteTable({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction>Continue</AlertDialogAction>
+					<AlertDialogAction onClick={onDelete}>
+						Continue
+					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
