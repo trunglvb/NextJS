@@ -53,6 +53,10 @@ export const columns: ColumnDef<TableItem>[] = [
 		cell: ({ row }) => (
 			<div className="capitalize">{row.getValue("number")}</div>
 		),
+		filterFn: (row, columnId, filterValue) => {
+			const rowValue = row.getValue<number>(columnId);
+			return rowValue?.toString().includes(filterValue.toString());
+		},
 	},
 	{
 		accessorKey: "capacity",

@@ -119,6 +119,7 @@ export default function DataTable<T>({
 								?.setFilterValue(event.target.value);
 							setSearch(event.target.value);
 						}}
+						//need define filterFn in columnDef if column value is not string
 						className="max-w-sm"
 					/>
 				)}
