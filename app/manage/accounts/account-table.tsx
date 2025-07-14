@@ -1,18 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import {
-	ColumnDef,
-	ColumnFiltersState,
-	SortingState,
-	VisibilityState,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-
+import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -46,7 +35,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import accountApiRequests from "@/apiRequests/account";
 import { toast } from "sonner";
 import DataTable from "@/components/table";
-import { WindowLoading } from "@/components/windowLoading";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -218,11 +206,7 @@ export default function AccountTable() {
 			}}
 		>
 			<div className="w-full">
-				<EditEmployee
-					id={employeeIdEdit}
-					setId={setEmployeeIdEdit}
-					onSubmitSuccess={() => {}}
-				/>
+				<EditEmployee id={employeeIdEdit} setId={setEmployeeIdEdit} />
 				<AlertDialogDeleteAccount
 					employeeDelete={employeeDelete}
 					setEmployeeDelete={setEmployeeDelete}

@@ -91,6 +91,7 @@ export default function UpdateProfileForm() {
 	const handleUploadSameImageError = (
 		event: React.MouseEvent<HTMLInputElement, MouseEvent>
 	) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(event.target as any).value = null;
 	};
 
@@ -111,7 +112,7 @@ export default function UpdateProfileForm() {
 							<FormField
 								control={form.control}
 								name="avatar"
-								render={({ field }) => (
+								render={() => (
 									<FormItem>
 										<div className="flex gap-2 items-start justify-start">
 											<Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">

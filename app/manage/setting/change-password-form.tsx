@@ -15,7 +15,6 @@ import { useMutation } from "@tanstack/react-query";
 import accountApiRequests from "@/apiRequests/account";
 import { toast } from "sonner";
 import { handleErrorApi } from "@/lib/utils";
-import { on } from "events";
 
 export default function ChangePasswordForm() {
 	const form = useForm<ChangePasswordBodyType>({

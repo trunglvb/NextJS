@@ -30,11 +30,9 @@ import { handleErrorApi } from "@/lib/utils";
 export default function EditEmployee({
 	id,
 	setId,
-	onSubmitSuccess,
 }: {
 	id?: number | undefined;
 	setId: (value: number | undefined) => void;
-	onSubmitSuccess?: () => void;
 }) {
 	const queryClient = useQueryClient();
 	const [file, setFile] = useState<File | null>(null);

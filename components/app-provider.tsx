@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import RefreshToken from "@/components/refresh-token";
 import { clearLocalStorage, getAccessTokenFromLocalStorage } from "@/lib/utils";

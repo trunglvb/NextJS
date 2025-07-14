@@ -19,7 +19,7 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
 	const renderPagination = () => {
 		let dotAfter = false;
 		let dotBefore = false;
-		const renderDotBefore = (index: number) => {
+		const renderDotBefore = () => {
 			if (!dotBefore) {
 				dotBefore = true;
 				return (
@@ -30,7 +30,7 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
 			}
 			return null;
 		};
-		const renderDotAfter = (index: number) => {
+		const renderDotAfter = () => {
 			if (!dotAfter) {
 				dotAfter = true;
 				return (
@@ -52,25 +52,25 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
 					pageNumber > page + RANGE &&
 					pageNumber < pageSize - RANGE + 1
 				) {
-					return renderDotAfter(index);
+					return renderDotAfter();
 				} else if (
 					page > RANGE * 2 + 1 &&
 					page < pageSize - RANGE * 2
 				) {
 					if (pageNumber < page - RANGE && pageNumber > RANGE) {
-						return renderDotBefore(index);
+						return renderDotBefore();
 					} else if (
 						pageNumber > page + RANGE &&
 						pageNumber < pageSize - RANGE + 1
 					) {
-						return renderDotAfter(index);
+						return renderDotAfter();
 					}
 				} else if (
 					page >= pageSize - RANGE * 2 &&
 					pageNumber > RANGE &&
 					pageNumber < page - RANGE
 				) {
-					return renderDotBefore(index);
+					return renderDotBefore();
 				}
 				return (
 					<PaginationItem key={index}>

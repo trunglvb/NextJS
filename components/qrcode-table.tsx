@@ -8,12 +8,12 @@ interface IQRCodeTableProps {
 	width?: number;
 }
 const QRCodeTable = (props: IQRCodeTableProps) => {
-	const { token, tableNumber, width = 250 } = props;
+	const { token, tableNumber } = props;
 	const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
 		const canvas = canvasRef.current!;
-		const ctx = canvas.getContext("2d")!;
+		// const ctx = canvas.getContext("2d")!;
 
 		QRCode.toCanvas(
 			canvas,
@@ -25,7 +25,7 @@ const QRCodeTable = (props: IQRCodeTableProps) => {
 				if (error) console.error(error);
 			}
 		);
-	}, []);
+	}, [tableNumber, token]);
 
 	return <canvas ref={canvasRef} />;
 };

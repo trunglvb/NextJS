@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
@@ -22,7 +23,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getTableLink, getVietnameseTableStatus } from "@/lib/utils";
+import { getVietnameseTableStatus } from "@/lib/utils";
 import { TableListResType } from "@/schemaValidations/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";

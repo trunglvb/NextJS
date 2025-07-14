@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import jwt from "jsonwebtoken";

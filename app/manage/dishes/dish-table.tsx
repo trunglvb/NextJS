@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
