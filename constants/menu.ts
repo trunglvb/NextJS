@@ -7,7 +7,7 @@ export interface IMenuItem {
 }
 
 const menuItems: IMenuItem[] = [
-	{ title: "Trang chủ", icon: "home", href: "/manage/dashboard" },
+	{ title: "Trang chủ", icon: "home", href: "/" },
 	{ title: "Đơn hàng", icon: "cart", href: "/manage/orders" },
 	{ title: "Bàn ăn", icon: "table", href: "/manage/tables" },
 	{ title: "Món ăn", icon: "salad", href: "/manage/dishes" },
