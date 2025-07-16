@@ -14,7 +14,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createContext, useContext, useState } from "react";
+import { createContext, Suspense, useContext, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -209,14 +209,16 @@ export default function DishTable() {
 					dishDelete={dishDelete}
 					setDishDelete={setDishDelete}
 				/>
-				<DataTable
-					searchable
-					searchKey="name"
-					data={dishes?.payload.data || []}
-					columns={columns}
-					pathname="/manage/dishes"
-					AddComponent={AddDish}
-				/>
+				<Suspense>
+					<DataTable
+						searchable
+						searchKey="name"
+						data={dishes?.payload.data || []}
+						columns={columns}
+						pathname="/manage/dishes"
+						AddComponent={AddDish}
+					/>
+				</Suspense>
 			</div>
 		</DishTableContext.Provider>
 	);

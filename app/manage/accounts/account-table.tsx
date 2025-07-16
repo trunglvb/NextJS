@@ -19,7 +19,7 @@ import {
 import AddEmployee from "@/app/manage/accounts/add-employee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditEmployee from "@/app/manage/accounts/edit-employee";
-import { createContext, useContext, useState } from "react";
+import { createContext, Suspense, useContext, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -211,14 +211,16 @@ export default function AccountTable() {
 					employeeDelete={employeeDelete}
 					setEmployeeDelete={setEmployeeDelete}
 				/>
-				<DataTable
-					data={tableData?.payload.data || []}
-					columns={columns}
-					pathname="/manage/accounts"
-					searchable
-					searchKey="name"
-					AddComponent={AddEmployee}
-				/>
+				<Suspense>
+					<DataTable
+						data={tableData?.payload.data || []}
+						columns={columns}
+						pathname="/manage/accounts"
+						searchable
+						searchKey="name"
+						AddComponent={AddEmployee}
+					/>
+				</Suspense>
 			</div>
 		</AccountTableContext.Provider>
 	);

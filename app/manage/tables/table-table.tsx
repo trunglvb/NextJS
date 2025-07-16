@@ -12,7 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createContext, useContext, useState } from "react";
+import { createContext, Suspense, useContext, useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -195,15 +195,17 @@ export default function TableTable() {
 					tableDelete={tableDelete}
 					setTableDelete={setTableDelete}
 				/>
-				<DataTable
-					searchable
-					searchKey="number"
-					searchPlaceholder="Lọc số bàn"
-					data={tables?.payload.data || []}
-					columns={columns}
-					pathname="/manage/tables"
-					AddComponent={AddTable}
-				/>
+				<Suspense>
+					<DataTable
+						searchable
+						searchKey="number"
+						searchPlaceholder="Lọc số bàn"
+						data={tables?.payload.data || []}
+						columns={columns}
+						pathname="/manage/tables"
+						AddComponent={AddTable}
+					/>
+				</Suspense>
 			</div>
 		</TableTableContext.Provider>
 	);
