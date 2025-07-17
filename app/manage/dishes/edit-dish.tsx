@@ -40,6 +40,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dishApiRequests from "@/apiRequests/dish";
 import { toast } from "sonner";
 import { mediaRequests } from "@/apiRequests/media";
+import { revalidateApiRequests } from "@/apiRequests/reavalidate";
 
 export default function EditDish({
 	id,
@@ -117,6 +118,7 @@ export default function EditDish({
 				...data,
 				image: imageUrl,
 			});
+			await revalidateApiRequests.revalidate("dishes");
 		} catch (error) {
 			handleErrorApi({ error: error, setError: form.setError });
 		}
