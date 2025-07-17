@@ -111,11 +111,6 @@ export default function EditEmployee({
 		}
 	);
 
-	const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		setFile(file!);
-	};
-
 	return (
 		<Dialog
 			open={Boolean(id)}
@@ -159,8 +154,15 @@ export default function EditEmployee({
 												accept="image/*"
 												ref={avatarInputRef}
 												onChange={(e) => {
-													onFileChange(e);
-													field.onChange(e);
+													const file =
+														e.target.files?.[0];
+													if (file) {
+														setFile(file);
+														field.onChange(
+															"http://localhost:3000/" +
+																file.name
+														);
+													}
 												}}
 												className="hidden"
 											/>
