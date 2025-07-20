@@ -10,13 +10,31 @@ import {
 	GuestLoginBodyType,
 	GuestLoginBody,
 } from "@/schemaValidations/guest.schema";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function GuestLoginForm() {
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const params = useParams();
+	const tableNumber = params?.number;
+	const tableToken = searchParams.get("token");
+
 	const form = useForm<GuestLoginBodyType>({
 		resolver: zodResolver(GuestLoginBody),
 		defaultValues: {
 			name: "",
 		},
+	});
+
+	useEffect(() => {
+		if (!tableToken) {
+			router.push(`/`);
+		}
+	}, [tableToken, router]);
+
+	const onSubmit = form.handleSubmit(async (data: GuestLoginBodyType) => {
+		console.log(data);
 	});
 
 	return (
@@ -29,6 +47,7 @@ export default function GuestLoginForm() {
 					<form
 						className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
 						noValidate
+						onSubmit={onSubmit}
 					>
 						<div className="grid gap-4">
 							<FormField

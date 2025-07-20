@@ -1,5 +1,10 @@
-import GuestLoginForm from '@/app/(public)/tables/[number]/guest-login-form'
+import GuestLoginForm from "@/app/(public)/tables/[number]/guest-login-form";
+import { Suspense } from "react";
 
 export default function TableNumberPage() {
-  return <GuestLoginForm />
+	return (
+		<Suspense>
+			<GuestLoginForm />
+		</Suspense>
+	);
 }
