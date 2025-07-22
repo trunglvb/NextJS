@@ -12,8 +12,13 @@ import {
 } from "@/schemaValidations/guest.schema";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import guestApiRequests from "@/apiRequests/guest";
+import { handleErrorApi } from "@/lib/utils";
+import { useAppContext } from "@/components/app-provider";
 
 export default function GuestLoginForm() {
+	const { setRole } = useAppContext();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
@@ -24,6 +29,8 @@ export default function GuestLoginForm() {
 		resolver: zodResolver(GuestLoginBody),
 		defaultValues: {
 			name: "",
+			token: tableToken ?? "",
+			tableNumber: Number(tableNumber),
 		},
 	});
 
@@ -33,8 +40,20 @@ export default function GuestLoginForm() {
 		}
 	}, [tableToken, router]);
 
+	const loginMutation = useMutation({
+		mutationFn: guestApiRequests.login,
+		onSuccess: (res) => {
+			setRole(res.payload.data.guest.role);
+			router.push("/guest/menu");
+		},
+		onError: (error) => {
+			handleErrorApi({ error: error, setError: form.setError });
+		},
+	});
+
 	const onSubmit = form.handleSubmit(async (data: GuestLoginBodyType) => {
-		console.log(data);
+		const res = await loginMutation.mutateAsync(data);
+		console.log(res);
 	});
 
 	return (

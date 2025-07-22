@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 
 const LogoutPage = () => {
-	const { setIsAuth } = useAppContext();
+	const { setRole } = useAppContext();
 	const ref = useRef<any>(null);
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -38,7 +38,7 @@ const LogoutPage = () => {
 				refreshToken: getRefreshTokenFromLocalStorage() as string,
 			}).then(() => {
 				router.push("/login");
-				setIsAuth(false);
+				setRole(undefined);
 				setTimeout(() => {
 					ref.current = null;
 				}, 2000);

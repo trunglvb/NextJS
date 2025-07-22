@@ -19,7 +19,7 @@ const guestApiRequests = {
 	}> | null,
 	serverLogin: (body: GuestLoginBodyType) =>
 		http.post<GuestLoginResType>("/guest/auth/login", body),
-	login: (body: LoginBodyType) =>
+	login: (body: GuestLoginBodyType) =>
 		http.post<GuestLoginResType>("/api/guest/auth/login", body, {
 			baseUrl: "", // khi baseUrl = "" la goi den route handler cua next server
 		}), //client goi api den next server, co the cau hinh type cua response tai route handler

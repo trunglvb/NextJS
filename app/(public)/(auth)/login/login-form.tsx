@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,10 @@ import { handleErrorApi } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
+import { Role } from "@/constants/type";
 
 export default function LoginForm() {
-	const { setIsAuth } = useAppContext();
+	const { setRole } = useAppContext();
 	const searchParams = useSearchParams();
 	const isClearTokens = searchParams.get("clearTokens");
 	const router = useRouter();
@@ -38,10 +40,10 @@ export default function LoginForm() {
 
 	useEffect(() => {
 		if (isClearTokens) {
-			setIsAuth(false);
+			setRole(undefined);
 			router.push("/logout");
 		}
-	}, [isClearTokens, setIsAuth, router]);
+	}, [isClearTokens]);
 
 	const loginMutation = useMutation({
 		mutationFn: authApiRequests.login,
@@ -49,10 +51,10 @@ export default function LoginForm() {
 
 	const onSubmit = form.handleSubmit(async (data: LoginBodyType) => {
 		try {
-			await loginMutation.mutateAsync(data);
-			toast.success("Đăng nhập thành công");
+			const res = await loginMutation.mutateAsync(data);
+			toast.success(res.payload.message);
 			router.push("/");
-			setIsAuth(true);
+			setRole(res.payload.data.account.role);
 		} catch (error: any) {
 			handleErrorApi({ error: error, setError: form.setError });
 		}
