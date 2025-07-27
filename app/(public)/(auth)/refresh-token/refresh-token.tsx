@@ -13,6 +13,9 @@ import {
 } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import jwt from "jsonwebtoken";
+import { TokenPayload } from "@/types/jwt.types";
+import { Role } from "@/constants/type";
+import guestApiRequests from "@/apiRequests/guest";
 
 const RefreshTokenAuth = () => {
 	const searchParams = useSearchParams();
@@ -33,14 +36,12 @@ const RefreshTokenAuth = () => {
 
 				//thoi diem het han cua token tinh theo epoch time
 				//neu dung new Date().getTime thi no se tra ve epocch time(ms)
-				const decodeAccessToken = jwt.decode(accessToken) as {
-					exp: number;
-					iat: number;
-				};
-				const decodeRefreshToken = jwt.decode(refreshToken) as {
-					exp: number;
-					iat: number;
-				};
+				const decodeAccessToken = jwt.decode(
+					accessToken
+				) as TokenPayload;
+				const decodeRefreshToken = jwt.decode(
+					refreshToken
+				) as TokenPayload;
 				const now = new Date().getTime() / 1000 - 1;
 				if (decodeRefreshToken.exp <= now) {
 					clearLocalStorage();
@@ -57,8 +58,11 @@ const RefreshTokenAuth = () => {
 					(decodeAccessToken.exp - decodeAccessToken.iat) / 3
 				) {
 					try {
-						const { payload } =
-							await authApiRequests.refreshToken();
+						const service =
+							decodeRefreshToken.role === Role.Guest
+								? guestApiRequests.refreshToken
+								: authApiRequests.refreshToken;
+						const { payload } = await service();
 						setAccessTokenToLocalStorage(payload.data.accessToken);
 						setRefreshTokenToLocalStorage(
 							payload.data.refreshToken
