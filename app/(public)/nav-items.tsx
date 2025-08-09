@@ -1,44 +1,53 @@
 "use client";
 
 import { useAppContext } from "@/components/app-provider";
+import { Role } from "@/constants/type";
+import { RoleType } from "@/types/jwt.types";
 import Link from "next/link";
 
-const menuItems = [
+interface IMenuItems {
+	title: string;
+	href: string;
+	role?: RoleType[];
+	hideLogined?: boolean;
+}
+
+const menuItems: IMenuItems[] = [
 	{
-		title: "Món ăn",
-		href: "/menu", //authRequired: undefined nghia la luon hien thi
+		title: "Trang chủ",
+		href: "/",
 	},
 	{
-		title: "Đơn hàng",
-		href: "/orders",
-		authRequired: true,
+		title: "Món ăn",
+		href: "/guest/menu",
+		role: [Role.Guest],
 	},
 	{
 		title: "Đăng nhập",
 		href: "/login",
-		authRequired: false,
+		hideLogined: true,
 	},
 	{
 		title: "Quản lý",
 		href: "/manage/dashboard",
-		authRequired: true,
+		role: [Role.Owner, Role.Employee],
 	},
 ];
 
 export default function NavItems({ className }: { className?: string }) {
 	const { role } = useAppContext();
-
 	return menuItems.map((item) => {
-		if (
-			(item.authRequired === true && !role) ||
-			(item.authRequired === false && role)
-		) {
-			return null;
+		const isAuth = role && item?.role && item.role.includes(role);
+		const canshow = !item.hideLogined && item?.role === undefined;
+
+		if (isAuth || canshow) {
+			return (
+				<Link href={item.href} key={item.href} className={className}>
+					{item.title}
+				</Link>
+			);
 		}
-		return (
-			<Link href={item.href} key={item.href} className={className}>
-				{item.title}
-			</Link>
-		);
+
+		return null;
 	});
 }
