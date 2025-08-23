@@ -38,7 +38,7 @@ export default function NavItems({ className }: { className?: string }) {
 	const { role } = useAppContext();
 	return menuItems.map((item) => {
 		const isAuth = role && item?.role && item.role.includes(role);
-		const canshow = !item.hideLogined && item?.role === undefined;
+		const canshow = item.hideLogined && !role;
 
 		if (isAuth || canshow) {
 			return (
