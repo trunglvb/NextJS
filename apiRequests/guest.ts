@@ -7,6 +7,8 @@ import {
 	RefreshTokenResType,
 } from "@/schemaValidations/auth.schema";
 import {
+	GuestCreateOrdersBodyType,
+	GuestCreateOrdersResType,
 	GuestLoginBodyType,
 	GuestLoginResType,
 } from "@/schemaValidations/guest.schema";
@@ -41,14 +43,14 @@ const guestApiRequests = {
 		}),
 
 	sRefreshToken: (body: RefreshTokenBodyType) =>
-		http.post<RefreshTokenResType>("/auth/refresh-token", body),
+		http.post<RefreshTokenResType>("/guest/auth/refresh-token", body),
 
 	async refreshToken() {
 		if (this.refreshTokenRequest) {
 			return this.refreshTokenRequest;
 		}
 		this.refreshTokenRequest = http.post<RefreshTokenResType>(
-			"/api/auth/refresh-token",
+			"/api/guest/auth/refresh-token",
 			null,
 			{
 				baseUrl: "",
@@ -58,5 +60,8 @@ const guestApiRequests = {
 		this.refreshTokenRequest = null;
 		return res;
 	},
+	order: (body: GuestCreateOrdersBodyType) =>
+		http.post<GuestCreateOrdersResType>("/guest/orders", body),
+	getOrders: () => http.get<GuestCreateOrdersResType>("/guest/orders"),
 };
 export default guestApiRequests;

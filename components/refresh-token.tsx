@@ -49,11 +49,10 @@ const RefreshToken = () => {
 				(decodeAccessToken.exp - decodeAccessToken.iat) / 3
 			) {
 				try {
-					const service =
+					const { payload } =
 						decodeRefreshToken.role === Role.Guest
-							? guestApiRequests.refreshToken
-							: authApiRequests.refreshToken;
-					const { payload } = await service();
+							? await guestApiRequests.refreshToken()
+							: await authApiRequests.refreshToken();
 					setAccessTokenToLocalStorage(payload.data.accessToken);
 					setRefreshTokenToLocalStorage(payload.data.refreshToken);
 				} catch (error) {
