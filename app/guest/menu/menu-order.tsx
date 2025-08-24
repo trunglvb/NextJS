@@ -7,8 +7,13 @@ import dishApiRequests from "@/apiRequests/dish";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import guestApiRequests from "@/apiRequests/guest";
 import { toast } from "sonner";
+import { useState } from "react";
+import { GuestCreateOrdersBodyType } from "@/schemaValidations/guest.schema";
+import Quantity from "@/app/guest/menu/quantity";
+import { formatCurrency } from "@/lib/utils";
 
 const MenuOrder = () => {
+	const [orders, setOrders] = useState<GuestCreateOrdersBodyType>([]);
 	const { data: dishes } = useQuery({
 		queryKey: ["dishes"],
 		queryFn: () => dishApiRequests.list(),
@@ -21,6 +26,30 @@ const MenuOrder = () => {
 			toast.success(res.payload.message);
 		},
 	});
+
+	const totalPrice = orders.reduce((total, order) => {
+		const dish = dishes?.payload.data.find((d) => d.id === order.dishId);
+		return total + (dish?.price || 0) * order.quantity;
+	}, 0);
+
+	console.log(totalPrice);
+
+	const handleChange = (id: number, quantity: number) => {
+		setOrders((prev) => {
+			const index = prev.findIndex((order) => order.dishId === id);
+			if (quantity === 0) {
+				return prev.filter((order) => order.dishId !== id);
+			}
+			if (index === -1) {
+				return [...prev, { dishId: id, quantity }];
+			}
+			const newOrders = [...prev];
+			newOrders[index].quantity = quantity;
+			return [...newOrders];
+		});
+	};
+
+	console.log(orders);
 
 	return (
 		<>
@@ -39,29 +68,23 @@ const MenuOrder = () => {
 					<div className="space-y-1">
 						<h3 className="text-sm">{dish.name}</h3>
 						<p className="text-xs">{dish.description}</p>
-						<p className="text-xs font-semibold">2,200,000 đ</p>
+						<p className="text-xs font-semibold">
+							{formatCurrency(dish.price)} đ
+						</p>
 					</div>
-					<div className="flex-shrink-0 ml-auto flex justify-center items-center">
-						<div className="flex gap-1 ">
-							<Button className="h-6 w-6 p-0">
-								<Minus className="w-3 h-3" />
-							</Button>
-							<Input
-								type="text"
-								readOnly
-								className="h-6 p-1 w-8"
-							/>
-							<Button className="h-6 w-6 p-0">
-								<Plus className="w-3 h-3" />
-							</Button>
-						</div>
-					</div>
+					<Quantity
+						onChange={(value) => handleChange(dish.id, value)}
+						value={
+							orders.find((order) => order.dishId === dish.id)
+								?.quantity ?? 0
+						}
+					/>
 				</div>
 			))}
 			<div className="sticky bottom-0">
 				<Button className="w-full justify-between">
-					<span>Giỏ hàng · 2 món</span>
-					<span>100,000 đ</span>
+					<span>Giỏ hàng · {orders.length} món</span>
+					<span>{formatCurrency(totalPrice)} đ</span>
 				</Button>
 			</div>
 		</>
