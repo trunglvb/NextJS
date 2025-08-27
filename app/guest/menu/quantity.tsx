@@ -5,9 +5,11 @@ import { Minus, Plus } from "lucide-react";
 export default function Quantity({
 	onChange,
 	value,
+	isDisabled = false,
 }: {
 	onChange: (value: number) => void;
 	value: number;
+	isDisabled?: boolean;
 }) {
 	return (
 		<div className="flex-shrink-0 ml-auto flex justify-center items-center">
@@ -33,7 +35,11 @@ export default function Quantity({
 					onChange(numberValue);
 				}}
 			/>
-			<Button className="h-6 w-6 p-0" onClick={() => onChange(value + 1)}>
+			<Button
+				className="h-6 w-6 p-0"
+				onClick={() => onChange(value + 1)}
+				disabled={isDisabled}
+			>
 				<Plus className="w-3 h-3" />
 			</Button>
 		</div>
