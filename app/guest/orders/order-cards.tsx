@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import socket from "@/lib/socket";
+import { UpdateOrderResType } from "@/schemaValidations/order.schema";
+import { toast } from "sonner";
 
 const OrderCards = () => {
 	const { data, refetch } = useQuery({
@@ -31,7 +33,14 @@ const OrderCards = () => {
 			console.log("disconnect");
 		}
 
-		function onUpdateOrder() {
+		function onUpdateOrder(data: UpdateOrderResType["data"]) {
+			toast.success(
+				`Món ${
+					data.dishSnapshot.name
+				} đã được cập nhật sang trạng thái ${getVietnameseOrderStatus(
+					data.status
+				)}`
+			);
 			refetch();
 		}
 
