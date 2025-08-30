@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import socket from "@/lib/socket";
 
 const OrderCards = () => {
-	const { data } = useQuery({
+	const { data, refetch } = useQuery({
 		queryKey: ["orders-list"],
 		queryFn: () => guestApiRequests.getOrders(),
 	});
@@ -16,6 +17,34 @@ const OrderCards = () => {
 	const totalPrice = orders?.reduce((total, order) => {
 		return total + order.dishSnapshot.price * order.quantity;
 	}, 0);
+
+	useEffect(() => {
+		if (socket.connected) {
+			onConnect();
+		}
+
+		function onConnect() {
+			console.log(socket.id);
+		}
+
+		function onDisconnect() {
+			console.log("disconnect");
+		}
+
+		function onUpdateOrder() {
+			refetch();
+		}
+
+		socket.on("connect", onConnect);
+		socket.on("disconnect", onDisconnect);
+		socket.on("update-order", onUpdateOrder);
+
+		return () => {
+			socket.off("connect", onConnect);
+			socket.off("disconnect", onDisconnect);
+			socket.off("update-order", onUpdateOrder);
+		};
+	}, []);
 
 	return (
 		<div>

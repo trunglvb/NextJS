@@ -36,8 +36,6 @@ const MenuOrder = () => {
 		return total + (dish?.price || 0) * order.quantity;
 	}, 0);
 
-	console.log(totalPrice);
-
 	const handleChange = (id: number, quantity: number) => {
 		setOrders((prev) => {
 			const index = prev.findIndex((order) => order.dishId === id);
