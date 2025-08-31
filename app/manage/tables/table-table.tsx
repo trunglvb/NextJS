@@ -23,11 +23,11 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getVietnameseTableStatus } from "@/lib/utils";
+import { getVietnameseTableStatus, SearchField } from "@/lib/utils";
 import { TableListResType } from "@/schemaValidations/table.schema";
 import EditTable from "@/app/manage/tables/edit-table";
 import AddTable from "@/app/manage/tables/add-table";
-import DataTable from "@/components/table";
+import CustomTable from "@/components/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { tableApiRequests } from "@/apiRequests/tables";
 import QRCodeTable from "@/components/qrcode-table";
@@ -185,6 +185,14 @@ export default function TableTable() {
 		queryFn: tableApiRequests.list,
 	});
 
+	const search: SearchField<TableItem>[] = [
+		{
+			field: "number",
+			type: "text",
+			placeholder: "Lọc số bàn",
+		},
+	];
+
 	return (
 		<TableTableContext.Provider
 			value={{ tableIdEdit, setTableIdEdit, tableDelete, setTableDelete }}
@@ -196,11 +204,9 @@ export default function TableTable() {
 					setTableDelete={setTableDelete}
 				/>
 				<Suspense>
-					<DataTable
-						searchable
-						searchKey="number"
-						searchPlaceholder="Lọc số bàn"
-						data={tables?.payload.data || []}
+					<CustomTable
+						search={search}
+						data={tables?.payload.data}
 						columns={columns}
 						pathname="/manage/tables"
 						AddComponent={AddTable}

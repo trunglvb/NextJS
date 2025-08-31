@@ -34,7 +34,8 @@ import { MoreHorizontal, SortAscIcon } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import accountApiRequests from "@/apiRequests/account";
 import { toast } from "sonner";
-import DataTable from "@/components/table";
+import CustomTable from "@/components/table";
+import { SearchField } from "@/lib/utils";
 
 type AccountItem = AccountListResType["data"][0];
 
@@ -195,6 +196,13 @@ export default function AccountTable() {
 		queryKey: ["accounts"],
 		queryFn: accountApiRequests.list,
 	});
+	const search: SearchField<AccountType>[] = [
+		{
+			field: "name",
+			type: "text",
+			placeholder: "Tìm theo tên",
+		},
+	];
 
 	return (
 		<AccountTableContext.Provider
@@ -212,12 +220,11 @@ export default function AccountTable() {
 					setEmployeeDelete={setEmployeeDelete}
 				/>
 				<Suspense>
-					<DataTable
-						data={tableData?.payload.data || []}
+					<CustomTable
+						search={search}
+						data={tableData?.payload.data}
 						columns={columns}
 						pathname="/manage/accounts"
-						searchable
-						searchKey="name"
 						AddComponent={AddEmployee}
 					/>
 				</Suspense>

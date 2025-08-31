@@ -25,14 +25,18 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatCurrency, getVietnameseDishStatus } from "@/lib/utils";
+import {
+	formatCurrency,
+	getVietnameseDishStatus,
+	SearchField,
+} from "@/lib/utils";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dishApiRequests from "@/apiRequests/dish";
 import { toast } from "sonner";
-import DataTable from "@/components/table";
+import CustomTable from "@/components/table";
 
 type DishItem = DishListResType["data"][0];
 
@@ -199,6 +203,14 @@ export default function DishTable() {
 		queryFn: dishApiRequests.list,
 	});
 
+	const search: SearchField<DishItem>[] = [
+		{
+			field: "name",
+			type: "text",
+			placeholder: "Tìm theo tên",
+		},
+	];
+
 	return (
 		<DishTableContext.Provider
 			value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}
@@ -210,10 +222,9 @@ export default function DishTable() {
 					setDishDelete={setDishDelete}
 				/>
 				<Suspense>
-					<DataTable
-						searchable
-						searchKey="name"
-						data={dishes?.payload.data || []}
+					<CustomTable
+						search={search}
+						data={dishes?.payload.data}
 						columns={columns}
 						pathname="/manage/dishes"
 						AddComponent={AddDish}

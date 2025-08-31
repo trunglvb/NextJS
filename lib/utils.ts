@@ -161,3 +161,12 @@ export const OrderStatusIcon = {
 	[OrderStatus.Delivered]: Truck,
 	[OrderStatus.Paid]: HandCoins,
 };
+
+export interface SearchField<T> {
+	field: keyof T;
+	type?: "text" | "select";
+	width?: string;
+	placeholder?: string;
+	className?: string;
+	options?: { label: string; value: string }[];
+}
