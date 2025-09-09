@@ -20,8 +20,10 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import {
+	CreateOrdersResType,
 	GetOrdersResType,
 	PayGuestOrdersResType,
+	UpdateOrderBodyType,
 	UpdateOrderResType,
 } from "@/schemaValidations/order.schema";
 import AddOrder from "@/app/manage/orders/add-order";
@@ -51,7 +53,11 @@ import {
 } from "@/components/ui/popover";
 import { endOfDay, format, startOfDay } from "date-fns";
 import TableSkeleton from "@/app/manage/orders/table-skeleton";
-import { GuestCreateOrdersResType } from "@/schemaValidations/guest.schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import orderApis from "@/apiRequests/order";
+import { tableApiRequests } from "@/apiRequests/tables";
+import socket from "@/lib/socket";
+import { toast } from "sonner";
 
 export const OrderTableContext = createContext({
 	setOrderIdEdit: (value: number | undefined) => {},
@@ -87,11 +93,6 @@ export default function OrderTable() {
 	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
 	const pageIndex = page - 1;
 	const [orderIdEdit, setOrderIdEdit] = useState<number | undefined>();
-	const orderList: any = [];
-	const tableList: any = [];
-	const tableListSortedByNumber = tableList.sort(
-		(a: any, b: any) => a.number - b.number
-	);
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -99,19 +100,104 @@ export default function OrderTable() {
 	);
 	const [rowSelection, setRowSelection] = useState({});
 	const [pagination, setPagination] = useState({
-		pageIndex, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-		pageSize: PAGE_SIZE, //default page size
+		pageIndex,
+		pageSize: PAGE_SIZE,
 	});
+
+	const { data: orderData, refetch: refetchOrders } = useQuery({
+		queryKey: ["orders", fromDate, toDate],
+		queryFn: () => orderApis.getOrders({ fromDate, toDate }),
+	});
+
+	const { data: tableData } = useQuery({
+		queryKey: ["tables"],
+		queryFn: tableApiRequests.list,
+	});
+
+	useEffect(() => {
+		if (socket.connected) {
+			onConnect();
+		}
+
+		function onConnect() {
+			console.log(socket.id);
+		}
+
+		function onDisconnect() {
+			console.log("disconnect");
+		}
+
+		const refetch = () => {
+			const now = new Date();
+			if (now >= fromDate && now <= toDate) {
+				refetchOrders();
+			}
+		};
+
+		function onUpdateOrder(data: UpdateOrderResType["data"]) {
+			toast.success(
+				`Món ${
+					data.dishSnapshot.name
+				} đã được cập nhật sang trạng thái ${getVietnameseOrderStatus(
+					data.status
+				)}`
+			);
+			refetch();
+		}
+
+		function onNewOrder(data: CreateOrdersResType["data"]) {
+			const { guest } = data[0];
+			console.log(data);
+
+			toast.success(
+				`${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn`
+			);
+			refetch();
+		}
+
+		socket.on("connect", onConnect);
+		socket.on("disconnect", onDisconnect);
+		socket.on("new-order", onNewOrder);
+		socket.on("update-order", onUpdateOrder);
+
+		return () => {
+			socket.off("connect", onConnect);
+			socket.off("disconnect", onDisconnect);
+			socket.off("new-order", onNewOrder);
+			socket.off("update-order", onUpdateOrder);
+		};
+	}, [refetchOrders]);
+
+	const updateOrderMutation = useMutation({
+		mutationKey: ["update-order"],
+		mutationFn: ({
+			orderId,
+			...data
+		}: UpdateOrderBodyType & { orderId: number }) =>
+			orderApis.updateOrder(orderId, data),
+	});
+
+	const orderList = orderData?.payload.data ?? [];
+	const tableList = tableData?.payload.data ?? [];
 
 	const { statics, orderObjectByGuestId, servingGuestByTableNumber } =
 		useOrderService(orderList);
+	const tableListSortedByNumber = tableList.sort(
+		(a, b) => a.number - b.number
+	);
 
 	const changeStatus = async (body: {
 		orderId: number;
 		dishId: number;
 		status: (typeof OrderStatusValues)[number];
 		quantity: number;
-	}) => {};
+	}) => {
+		try {
+			await updateOrderMutation.mutateAsync(body);
+		} catch (error) {
+			handleErrorApi({ error: error });
+		}
+	};
 
 	const table = useReactTable({
 		data: orderList,

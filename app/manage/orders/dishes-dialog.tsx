@@ -25,7 +25,8 @@ import dishApiRequests from "@/apiRequests/dish";
 type DishItem = DishListResType["data"][0];
 export const columns: ColumnDef<DishItem>[] = [
 	{
-		id: "dishName",
+		id: "name",
+		accessorKey: "name",
 		header: "Món ăn",
 		cell: ({ row }) => (
 			<div className="flex items-center space-x-4">
@@ -94,7 +95,7 @@ export function DishesDialog({
 			<DialogTrigger asChild>
 				<Button variant="outline">Thay đổi</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[600px]">
+			<DialogContent className="sm:max-w-[600px] max-h-full overflow-auto">
 				<DialogHeader>
 					<DialogTitle>Chọn món ăn</DialogTitle>
 				</DialogHeader>

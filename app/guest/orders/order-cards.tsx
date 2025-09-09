@@ -21,36 +21,19 @@ const OrderCards = () => {
 	}, 0);
 
 	useEffect(() => {
-		if (socket.connected) {
-			onConnect();
-		}
-
-		function onConnect() {
-			console.log(socket.id);
-		}
-
-		function onDisconnect() {
-			console.log("disconnect");
-		}
-
 		function onUpdateOrder(data: UpdateOrderResType["data"]) {
 			toast.success(
-				`Món ${
-					data.dishSnapshot.name
+				`Món ${data.dishSnapshot.name}  SL: ${
+					data.quantity
 				} đã được cập nhật sang trạng thái ${getVietnameseOrderStatus(
 					data.status
 				)}`
 			);
 			refetch();
 		}
-
-		socket.on("connect", onConnect);
-		socket.on("disconnect", onDisconnect);
 		socket.on("update-order", onUpdateOrder);
 
 		return () => {
-			socket.off("connect", onConnect);
-			socket.off("disconnect", onDisconnect);
 			socket.off("update-order", onUpdateOrder);
 		};
 	}, []);
