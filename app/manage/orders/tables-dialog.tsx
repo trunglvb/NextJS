@@ -32,6 +32,8 @@ import { cn, getVietnameseTableStatus, simpleMatchText } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { TableListResType } from "@/schemaValidations/table.schema";
 import { TableStatus } from "@/constants/type";
+import { useQuery } from "@tanstack/react-query";
+import { tableApiRequests } from "@/apiRequests/tables";
 
 type TableItem = TableListResType["data"][0];
 
@@ -74,7 +76,6 @@ export function TablesDialog({
 	onChoose: (table: TableItem) => void;
 }) {
 	const [open, setOpen] = useState(false);
-	const data: TableListResType["data"] = [];
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -85,6 +86,13 @@ export function TablesDialog({
 		pageIndex: 0, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
 		pageSize: PAGE_SIZE, //default page size
 	});
+
+	const { data: tables } = useQuery({
+		queryKey: ["tables"],
+		queryFn: tableApiRequests.list,
+	});
+
+	const data = tables?.payload.data || [];
 
 	const table = useReactTable({
 		data,

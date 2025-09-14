@@ -37,6 +37,8 @@ import { Input } from "@/components/ui/input";
 import { GetListGuestsResType } from "@/schemaValidations/account.schema";
 import { endOfDay, format, startOfDay } from "date-fns";
 import CustomTable from "@/components/table";
+import { useQuery } from "@tanstack/react-query";
+import accountApiRequests from "@/apiRequests/account";
 
 type GuestItem = GetListGuestsResType["data"][0];
 
@@ -94,46 +96,11 @@ export default function GuestsDialog({
 	const [open, setOpen] = useState(false);
 	const [fromDate, setFromDate] = useState(initFromDate);
 	const [toDate, setToDate] = useState(initToDate);
-	const data: GetListGuestsResType["data"] = [];
-	const [sorting, setSorting] = useState<SortingState>([]);
-	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-		{}
-	);
-	const [rowSelection, setRowSelection] = useState({});
-	const [pagination, setPagination] = useState({
-		pageIndex: 0, // Gía trị mặc định ban đầu, không có ý nghĩa khi data được fetch bất đồng bộ
-		pageSize: PAGE_SIZE, //default page size
-	});
 
-	const table = useReactTable({
-		data,
-		columns,
-		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
-		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		onColumnVisibilityChange: setColumnVisibility,
-		onRowSelectionChange: setRowSelection,
-		onPaginationChange: setPagination,
-		autoResetPageIndex: false,
-		state: {
-			sorting,
-			columnFilters,
-			columnVisibility,
-			rowSelection,
-			pagination,
-		},
+	const { data } = useQuery({
+		queryKey: ["guests", fromDate, toDate],
+		queryFn: () => accountApiRequests.getGuestsList({ fromDate, toDate }),
 	});
-
-	useEffect(() => {
-		table.setPagination({
-			pageIndex: 0,
-			pageSize: PAGE_SIZE,
-		});
-	}, [table]);
 
 	const choose = (guest: GuestItem) => {
 		onChoose(guest);
@@ -199,7 +166,7 @@ export default function GuestsDialog({
 			field: "tableNumber",
 			type: "text",
 			placeholder: "Tìm theo số bàn",
-			width: "80px",
+			width: "200px",
 		},
 	];
 
@@ -217,7 +184,7 @@ export default function GuestsDialog({
 						<Suspense>
 							<CustomTable
 								search={search}
-								data={data}
+								data={data?.payload.data}
 								columns={columns}
 								pathname="/manage/guests"
 								customFilter={onRenderCustomFilter()}
