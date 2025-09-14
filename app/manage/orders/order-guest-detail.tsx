@@ -1,3 +1,4 @@
+import orderApis from "@/apiRequests/order";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OrderStatus } from "@/constants/type";
@@ -7,8 +8,10 @@ import {
 	formatDateTimeToLocaleString,
 	formatDateTimeToTimeString,
 	getVietnameseOrderStatus,
+	handleErrorApi,
 } from "@/lib/utils";
 import { GetOrdersResType } from "@/schemaValidations/order.schema";
+import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { Fragment } from "react";
 
@@ -21,6 +24,22 @@ export default function OrderGuestDetail({
 	guest: Guest;
 	orders: Orders;
 }) {
+	const payForGuestMutation = useMutation({
+		mutationKey: ["pay-for-guest"],
+		mutationFn: orderApis.pay,
+	});
+
+	const handlePay = async () => {
+		if (payForGuestMutation.isPending || !guest) return;
+		try {
+			await payForGuestMutation.mutateAsync({
+				guestId: guest?.id as number,
+			});
+		} catch (error) {
+			handleErrorApi({ error: error });
+		}
+	};
+
 	const ordersFilterToPurchase = guest
 		? orders.filter(
 				(order) =>
@@ -169,6 +188,7 @@ export default function OrderGuestDetail({
 					size={"sm"}
 					variant={"secondary"}
 					disabled={ordersFilterToPurchase.length === 0}
+					onClick={handlePay}
 				>
 					Thanh toán tất cả ({ordersFilterToPurchase.length} đơn)
 				</Button>

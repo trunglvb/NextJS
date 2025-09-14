@@ -38,7 +38,6 @@ import { useEffect, useState } from "react";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import orderApis from "@/apiRequests/order";
-import { toast } from "sonner";
 
 export default function EditOrder({
 	id,
@@ -92,7 +91,7 @@ export default function EditOrder({
 				quantity,
 			});
 		}
-	}, [orderDetail]);
+	}, [orderDetail, form]);
 
 	const onSubmit = async (values: UpdateOrderBodyType) => {
 		try {

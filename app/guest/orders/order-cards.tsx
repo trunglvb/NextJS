@@ -4,9 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import socket from "@/lib/socket";
-import { UpdateOrderResType } from "@/schemaValidations/order.schema";
+import {
+	PayGuestOrdersResType,
+	UpdateOrderResType,
+} from "@/schemaValidations/order.schema";
 import { toast } from "sonner";
 
 const OrderCards = () => {
@@ -31,10 +34,20 @@ const OrderCards = () => {
 			);
 			refetch();
 		}
+		function onPayment(data: PayGuestOrdersResType["data"]) {
+			const { guest } = data[0];
+			toast.success(
+				`${guest?.name} tại bàn ${guest?.tableNumber} vừa thanh toán ${data.length} đơn`
+			);
+			refetch();
+		}
+
 		socket.on("update-order", onUpdateOrder);
+		socket.on("payment", onPayment);
 
 		return () => {
 			socket.off("update-order", onUpdateOrder);
+			socket.off("payment", onPayment);
 		};
 	}, []);
 

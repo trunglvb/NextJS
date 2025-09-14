@@ -145,10 +145,16 @@ export default function OrderTable() {
 			refetch();
 		}
 
+		function onPayment(data: PayGuestOrdersResType["data"]) {
+			const { guest } = data[0];
+			toast.success(
+				`${guest?.name} tại bàn ${guest?.tableNumber} vừa thanh toán ${data.length} đơn`
+			);
+			refetch();
+		}
+
 		function onNewOrder(data: CreateOrdersResType["data"]) {
 			const { guest } = data[0];
-			console.log(data);
-
 			toast.success(
 				`${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn`
 			);
@@ -159,12 +165,14 @@ export default function OrderTable() {
 		socket.on("disconnect", onDisconnect);
 		socket.on("new-order", onNewOrder);
 		socket.on("update-order", onUpdateOrder);
+		socket.on("payment", onPayment);
 
 		return () => {
 			socket.off("connect", onConnect);
 			socket.off("disconnect", onDisconnect);
 			socket.off("new-order", onNewOrder);
 			socket.off("update-order", onUpdateOrder);
+			socket.off("payment", onPayment);
 		};
 	}, [refetchOrders]);
 
