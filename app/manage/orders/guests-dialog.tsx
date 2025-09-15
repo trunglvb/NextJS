@@ -189,6 +189,7 @@ export default function GuestsDialog({
 								pathname="/manage/guests"
 								customFilter={onRenderCustomFilter()}
 								onRowEvent={choose}
+								isLink={false}
 							/>
 						</Suspense>
 					</div>

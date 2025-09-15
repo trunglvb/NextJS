@@ -55,6 +55,7 @@ interface DataTableProps<T> {
 	onRowEvent?: (value: any) => void;
 	customFilter?: JSX.Element;
 	renderTop?: JSX.Element;
+	isLink?: boolean;
 }
 
 export default function CustomTable<T>({
@@ -69,6 +70,7 @@ export default function CustomTable<T>({
 	customFilter,
 	onRowEvent,
 	renderTop,
+	isLink = true,
 }: DataTableProps<T>) {
 	const searchParam = useSearchParams();
 	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
@@ -116,11 +118,13 @@ export default function CustomTable<T>({
 		.flatRows.map((item) => item.original);
 
 	useEffect(() => {
-		table.setPagination({
-			pageIndex,
-			pageSize: pageSize,
-		});
-	}, [table, pageIndex, pageSize]);
+		if (isLink) {
+			table.setPagination({
+				pageIndex,
+				pageSize: pageSize,
+			});
+		}
+	}, [table, pageIndex, pageSize, isLink]);
 
 	useEffect(() => {
 		onChange?.(selectedRows);
@@ -147,6 +151,16 @@ export default function CustomTable<T>({
 	const selectFilterFields = search.filter(
 		(field) => field.type === "select"
 	);
+
+	const onPaginationClick = (pageNumber: number) => {
+		if (!isLink) {
+			table.setPagination({
+				pageIndex: pageNumber - 1,
+				pageSize: pageSize,
+			});
+		}
+		return;
+	};
 
 	return (
 		<div>
@@ -319,6 +333,8 @@ export default function CustomTable<T>({
 						page={table.getState().pagination.pageIndex + 1}
 						pageSize={table.getPageCount()}
 						pathname={pathname}
+						isLink={isLink}
+						onClick={onPaginationClick}
 					/>
 				</div>
 			</div>

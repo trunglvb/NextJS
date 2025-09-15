@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
 	Pagination,
 	PaginationContent,
@@ -12,10 +13,18 @@ interface Props {
 	page: number;
 	pageSize: number;
 	pathname: string;
+	isLink?: boolean;
+	onClick?: (pageNumber: number) => void;
 }
 
 const RANGE = 2;
-export default function AutoPagination({ page, pageSize, pathname }: Props) {
+export default function AutoPagination({
+	page,
+	pageSize,
+	pathname,
+	isLink = true,
+	onClick,
+}: Props) {
 	const renderPagination = () => {
 		let dotAfter = false;
 		let dotBefore = false;
@@ -74,17 +83,29 @@ export default function AutoPagination({ page, pageSize, pathname }: Props) {
 				}
 				return (
 					<PaginationItem key={index}>
-						<PaginationLink
-							href={{
-								pathname,
-								query: {
-									page: pageNumber,
-								},
-							}}
-							isActive={pageNumber === page}
-						>
-							{pageNumber}
-						</PaginationLink>
+						{isLink && (
+							<PaginationLink
+								href={{
+									pathname,
+									query: {
+										page: pageNumber,
+									},
+								}}
+								isActive={pageNumber === page}
+							>
+								{pageNumber}
+							</PaginationLink>
+						)}
+						{!isLink && (
+							<Button
+								onClick={() => onClick!(pageNumber)}
+								variant={
+									pageNumber === page ? "outline" : "ghost"
+								}
+							>
+								{pageNumber}
+							</Button>
+						)}
 					</PaginationItem>
 				);
 			});
