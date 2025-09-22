@@ -20,6 +20,7 @@ import {
 	Salad,
 	LineChart,
 	Users2,
+	MagnetIcon,
 } from "lucide-react";
 
 const iconMap = {
@@ -29,6 +30,7 @@ const iconMap = {
 	salad: Salad,
 	chart: LineChart,
 	users: Users2,
+	manage: MagnetIcon,
 };
 
 export type IconKey = keyof typeof iconMap;

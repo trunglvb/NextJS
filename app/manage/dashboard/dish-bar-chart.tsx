@@ -17,6 +17,10 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+	DashboardIndicatorRes,
+	DashboardIndicatorResType,
+} from "@/schemaValidations/indicator.schema";
 
 const colors = [
 	"var(--color-chrome)",
@@ -51,14 +55,22 @@ const chartConfig = {
 		color: "hsl(var(--chart-5))",
 	},
 } satisfies ChartConfig;
-const chartData = [
-	{ name: "chrome", successOrders: 275, fill: "var(--color-chrome)" },
-	{ name: "safari", successOrders: 200, fill: "var(--color-safari)" },
-	{ name: "firefox", successOrders: 187, fill: "var(--color-firefox)" },
-	{ name: "edge", successOrders: 173, fill: "var(--color-edge)" },
-	{ name: "other", successOrders: 90, fill: "var(--color-other)" },
-];
-export function DishBarChart() {
+
+interface IChartProps {
+	dishIndicator: Pick<
+		DashboardIndicatorResType["data"]["dishIndicator"][0],
+		"name" | "successOrders"
+	>[];
+}
+export function DishBarChart(props: IChartProps) {
+	const { dishIndicator } = props;
+
+	const chartData = dishIndicator.map((item, index) => {
+		return {
+			...item,
+			fill: colors[index] || colors[0],
+		};
+	});
 	return (
 		<Card>
 			<CardHeader>
@@ -94,7 +106,7 @@ export function DishBarChart() {
 						/>
 						<Bar
 							dataKey="successOrders"
-							name={"Đơn thanh toán"}
+							name={"Đơn thanh toán: "}
 							layout="vertical"
 							radius={5}
 							fill="#8884d8"
