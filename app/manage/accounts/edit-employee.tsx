@@ -18,7 +18,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormMessage,
+} from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +32,14 @@ import accountApiRequests from "@/apiRequests/account";
 import { toast } from "sonner";
 import { mediaRequests } from "@/apiRequests/media";
 import { handleErrorApi } from "@/lib/utils";
+import { Role, RoleValues } from "@/constants/type";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export default function EditEmployee({
 	id,
@@ -46,6 +60,7 @@ export default function EditEmployee({
 			password: undefined,
 			confirmPassword: undefined,
 			changePassword: false,
+			role: Role.Employee,
 		},
 	});
 	const avatar = form.watch("avatar");
@@ -67,6 +82,7 @@ export default function EditEmployee({
 				name: employee.name,
 				email: employee.email,
 				avatar: employee.avatar as string,
+				role: employee.role,
 			});
 		}
 	}, [employee, form]);
@@ -104,6 +120,7 @@ export default function EditEmployee({
 					changePassword: data.changePassword,
 					password: data.password,
 					confirmPassword: data.confirmPassword,
+					role: data.role,
 				});
 			} catch (error) {
 				handleErrorApi({ error: error, setError: form.setError });
@@ -289,6 +306,48 @@ export default function EditEmployee({
 									)}
 								/>
 							)}
+							<FormField
+								control={form.control}
+								name="role"
+								render={({ field }) => (
+									<FormItem>
+										<div className="grid grid-cols-4 items-center justify-items-start gap-4">
+											<Label htmlFor="description">
+												Phân quyền
+											</Label>
+											<div className="col-span-3 w-full space-y-2">
+												<Select
+													onValueChange={
+														field.onChange
+													}
+													defaultValue={field.value}
+												>
+													<FormControl className="w-full">
+														<SelectTrigger>
+															<SelectValue placeholder="Chọn vai trò" />
+														</SelectTrigger>
+													</FormControl>
+													<SelectContent>
+														{RoleValues.filter(
+															(role) =>
+																role !==
+																Role.Guest
+														).map((value) => (
+															<SelectItem
+																key={value}
+																value={value}
+															>
+																{value}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+												<FormMessage />
+											</div>
+										</div>
+									</FormItem>
+								)}
+							/>
 						</div>
 					</form>
 				</Form>
