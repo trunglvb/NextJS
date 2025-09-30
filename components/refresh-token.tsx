@@ -14,16 +14,29 @@ import {
 import { TokenPayload } from "@/types/jwt.types";
 import { Role } from "@/constants/type";
 import guestApiRequests from "@/apiRequests/guest";
+import { useAppContext } from "@/components/app-provider";
+import { toast } from "sonner";
 
 const undauthenticatedPaths = ["/login", "/refresh-token"];
 const RefreshToken = () => {
+	const { socket, setSocket } = useAppContext();
 	const pathname = usePathname();
 	const router = useRouter();
 
 	useEffect(() => {
 		if (undauthenticatedPaths.includes(pathname)) return;
+		if (socket?.connected) {
+			onConnect();
+		}
+		function onConnect() {
+			console.log(socket?.id);
+		}
+		function onDisconnect() {
+			console.log("disconnect");
+		}
+
 		let interval: any = null;
-		const checkAndRefreshToken = async () => {
+		const checkAndRefreshToken = async (forceRefresh?: boolean) => {
 			const accessToken = getAccessTokenFromLocalStorage();
 			const refreshToken = getRefreshTokenFromLocalStorage();
 
@@ -45,8 +58,9 @@ const RefreshToken = () => {
 			//thoi gian ton tai cua accessToken: decodeAccessToken.exp - decodeAccessToken.iat
 
 			if (
+				forceRefresh ||
 				decodeAccessToken.exp - now <
-				(decodeAccessToken.exp - decodeAccessToken.iat) / 3
+					(decodeAccessToken.exp - decodeAccessToken.iat) / 3
 			) {
 				try {
 					const { payload } =
@@ -57,6 +71,8 @@ const RefreshToken = () => {
 					setRefreshTokenToLocalStorage(payload.data.refreshToken);
 				} catch (error) {
 					clearInterval(interval);
+					socket?.disconnect();
+					setSocket(undefined);
 					router.push("/login");
 				}
 			}
@@ -65,10 +81,22 @@ const RefreshToken = () => {
 		checkAndRefreshToken();
 		interval = setInterval(checkAndRefreshToken, 2000); //timer phai nho hon thoi gian het han cua access token
 
+		function forceRefreshToken() {
+			checkAndRefreshToken(true);
+			toast.success("Cập nhật role thành công");
+		}
+
+		socket?.on("connect", onConnect);
+		socket?.on("disconnect", onDisconnect);
+		socket?.on("refresh-token", forceRefreshToken);
+
 		return () => {
 			clearInterval(interval);
+			socket?.off("connect", onConnect);
+			socket?.off("disconnect", onDisconnect);
+			socket?.off("refresh-token", forceRefreshToken);
 		};
-	}, [pathname, router]);
+	}, [pathname, router, socket]);
 	return null;
 };
 

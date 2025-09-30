@@ -313,7 +313,7 @@ export default function EditEmployee({
 									<FormItem>
 										<div className="grid grid-cols-4 items-center justify-items-start gap-4">
 											<Label htmlFor="description">
-												Phân quyền
+												Vai trò
 											</Label>
 											<div className="col-span-3 w-full space-y-2">
 												<Select

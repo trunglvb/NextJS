@@ -8,6 +8,7 @@ const managePaths = ["/manage"];
 const guestPaths = ["/guest"];
 const authPaths = ["/login"];
 const privatePaths = ["/manage", "/guest"];
+const onlyOwnerPaths = ["/manage/accounts"];
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
@@ -61,6 +62,15 @@ export function middleware(request: NextRequest) {
 	) {
 		return NextResponse.redirect(new URL("/", request.url));
 	}
+
+	//neu employee muon truy cap vao trang manage cua owner
+	if (
+		onlyOwnerPaths.some((path) => pathname.startsWith(path)) &&
+		role !== Role.Owner
+	) {
+		return NextResponse.redirect(new URL("/", request.url));
+	}
+
 	return NextResponse.next();
 }
 

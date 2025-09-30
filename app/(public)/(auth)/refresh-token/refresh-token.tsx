@@ -16,8 +16,11 @@ import jwt from "jsonwebtoken";
 import { TokenPayload } from "@/types/jwt.types";
 import { Role } from "@/constants/type";
 import guestApiRequests from "@/apiRequests/guest";
+import { useAppContext } from "@/components/app-provider";
+import { set } from "date-fns";
 
 const RefreshTokenAuth = () => {
+	const { socket, setSocket } = useAppContext();
 	const searchParams = useSearchParams();
 	const refreshTokenFromUrl = searchParams.get("refreshToken");
 	const redirectPath = searchParams.get("redirect");
@@ -69,6 +72,8 @@ const RefreshTokenAuth = () => {
 						router.push(`/${redirectPath}`);
 					} catch (error) {
 						clearInterval(interval);
+						socket?.disconnect();
+						setSocket(undefined);
 						router.push("/logout");
 					}
 				}

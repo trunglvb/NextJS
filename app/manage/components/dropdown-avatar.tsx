@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useAppContext } from "@/components/app-provider";
 
 export default function DropdownAvatar() {
-	const { setRole } = useAppContext();
+	const { setRole, setSocket, socket } = useAppContext();
 	const router = useRouter();
 	const { data } = useQuery({
 		queryKey: ["account-me"],
@@ -34,7 +34,9 @@ export default function DropdownAvatar() {
 		await loginMutation.mutateAsync({
 			refreshToken: localStorage.getItem("refreshToken") as string,
 		});
+		socket?.disconnect();
 		setRole(undefined);
+		setSocket(undefined);
 		toast.success("Đăng xuất thành công");
 		router.push("/");
 		// clearLocalStorage(); config tai http.ts

@@ -14,11 +14,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import guestApiRequests from "@/apiRequests/guest";
-import { handleErrorApi } from "@/lib/utils";
+import { handleErrorApi, initSocket } from "@/lib/utils";
 import { useAppContext } from "@/components/app-provider";
 
 export default function GuestLoginForm() {
-	const { setRole } = useAppContext();
+	const { setRole, setSocket } = useAppContext();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
@@ -45,6 +45,7 @@ export default function GuestLoginForm() {
 		onSuccess: (res) => {
 			setRole(res.payload.data.guest.role);
 			router.push("/guest/menu");
+			setSocket(initSocket(res.payload.data.accessToken));
 		},
 		onError: (error) => {
 			handleErrorApi({ error: error, setError: form.setError });

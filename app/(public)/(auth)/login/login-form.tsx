@@ -18,14 +18,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import authApiRequests from "@/apiRequests/auth";
 import { toast } from "sonner";
-import { handleErrorApi } from "@/lib/utils";
+import {
+	getAccessTokenFromLocalStorage,
+	handleErrorApi,
+	initSocket,
+} from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
-import { Role } from "@/constants/type";
+import { io } from "socket.io-client";
 
 export default function LoginForm() {
-	const { setRole } = useAppContext();
+	const { setRole, setSocket } = useAppContext();
 	const searchParams = useSearchParams();
 	const isClearTokens = searchParams.get("clearTokens");
 	const router = useRouter();
@@ -55,6 +59,7 @@ export default function LoginForm() {
 			toast.success(res.payload.message);
 			router.push("/");
 			setRole(res.payload.data.account.role);
+			setSocket(initSocket(res.payload.data.accessToken));
 		} catch (error: any) {
 			handleErrorApi({ error: error, setError: form.setError });
 		}

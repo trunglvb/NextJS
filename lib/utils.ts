@@ -8,6 +8,7 @@ import { DishStatus, OrderStatus, TableStatus } from "@/constants/type";
 import { clientEnvConfig } from "@/config";
 import { format } from "date-fns";
 import { BookX, CookingPot, HandCoins, Loader, Truck } from "lucide-react";
+import { io } from "socket.io-client";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -170,3 +171,11 @@ export interface SearchField<T> {
 	className?: string;
 	options?: { label: string; value: string }[];
 }
+
+export const initSocket = (token: string) => {
+	return io(process.env.NEXT_PUBLIC_API_ENDPOINT!, {
+		auth: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+};

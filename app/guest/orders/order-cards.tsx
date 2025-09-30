@@ -5,14 +5,15 @@ import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import React, { useEffect } from "react";
-import socket from "@/lib/socket";
 import {
 	PayGuestOrdersResType,
 	UpdateOrderResType,
 } from "@/schemaValidations/order.schema";
 import { toast } from "sonner";
+import { useAppContext } from "@/components/app-provider";
 
 const OrderCards = () => {
+	const { socket } = useAppContext();
 	const { data, refetch } = useQuery({
 		queryKey: ["orders-list"],
 		queryFn: () => guestApiRequests.getOrders(),
@@ -42,12 +43,12 @@ const OrderCards = () => {
 			refetch();
 		}
 
-		socket.on("update-order", onUpdateOrder);
-		socket.on("payment", onPayment);
+		socket?.on("update-order", onUpdateOrder);
+		socket?.on("payment", onPayment);
 
 		return () => {
-			socket.off("update-order", onUpdateOrder);
-			socket.off("payment", onPayment);
+			socket?.off("update-order", onUpdateOrder);
+			socket?.off("payment", onPayment);
 		};
 	}, []);
 
