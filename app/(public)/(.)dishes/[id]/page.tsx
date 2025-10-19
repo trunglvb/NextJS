@@ -5,6 +5,10 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+//(.) la 1 cấp
+//(..) la 2 cấp, ví dụ tạo (..)dishes bên trong dishes (hoac folder cấp 1 nào khác)
+//khai bao interepting route ở đâu thì những page ở level đó và con của nó sẽ bị chặn (nghĩa là navigate từ route này)
+
 export default async function DishPage({ params }: { params: { id: string } }) {
 	const { id } = params;
 	let dish: DishResType["data"];
@@ -25,14 +29,14 @@ export default async function DishPage({ params }: { params: { id: string } }) {
 				</CardHeader>
 
 				<CardContent className="space-y-4">
-					<div className="w-full aspect-video relative overflow-hidden rounded-lg">
+					{/* <div className="w-full aspect-video relative overflow-hidden rounded-lg">
 						<Image
 							src={dish.image}
 							alt={dish.name}
 							fill
 							className="object-cover"
 						/>
-					</div>
+					</div> */}
 
 					<div>
 						<p className="text-gray-700">{dish.description}</p>
