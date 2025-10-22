@@ -18,15 +18,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import authApiRequests from "@/apiRequests/auth";
 import { toast } from "sonner";
-import {
-	getAccessTokenFromLocalStorage,
-	handleErrorApi,
-	initSocket,
-} from "@/lib/utils";
+import { handleErrorApi, initSocket } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
-import { io } from "socket.io-client";
 
 export default function LoginForm() {
 	const { setRole, setSocket } = useAppContext();
