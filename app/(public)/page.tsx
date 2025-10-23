@@ -3,8 +3,10 @@ import dishApiRequests from "@/apiRequests/dish";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
+	const t = await getTranslations("HomePage");
 	let dishList: DishListResType["data"] = [];
 	try {
 		const res = await dishApiRequests.list();
@@ -15,6 +17,7 @@ export default async function Home() {
 
 	return (
 		<div className="w-full space-y-4">
+			<h1>{t("title")}</h1>
 			<div className="relative">
 				<span className="absolute top-0 left-0 w-full h-full bg-black opacity-50 z-10"></span>
 				<Image

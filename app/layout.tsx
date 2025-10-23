@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppProvider } from "@/components/app-provider";
+import { NextIntlClientProvider } from "next-intl";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						{children}
+						<NextIntlClientProvider>
+							{children}
+						</NextIntlClientProvider>
 						<Toaster position="top-right" richColors />
 					</ThemeProvider>
 				</AppProvider>
