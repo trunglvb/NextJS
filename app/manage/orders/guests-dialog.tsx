@@ -6,28 +6,9 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
-import AutoPagination from "@/components/pagination";
-import { Suspense, useEffect, useState } from "react";
-import {
-	ColumnDef,
-	ColumnFiltersState,
-	SortingState,
-	VisibilityState,
-	flexRender,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+
+import { Suspense, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import {
 	formatDateTimeToLocaleString,
 	SearchField,
@@ -84,7 +65,6 @@ export const columns: ColumnDef<GuestItem>[] = [
 	},
 ];
 
-const PAGE_SIZE = 10;
 const initFromDate = startOfDay(new Date());
 const initToDate = endOfDay(new Date());
 

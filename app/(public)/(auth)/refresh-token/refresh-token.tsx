@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -17,7 +18,6 @@ import { TokenPayload } from "@/types/jwt.types";
 import { Role } from "@/constants/type";
 import guestApiRequests from "@/apiRequests/guest";
 import { useAppContext } from "@/components/app-provider";
-import { set } from "date-fns";
 
 const RefreshTokenAuth = () => {
 	const { socket, setSocket } = useAppContext();

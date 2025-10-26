@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import guestApiRequests from "@/apiRequests/guest";
 import { Badge } from "@/components/ui/badge";

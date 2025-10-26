@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import {
@@ -17,10 +16,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-	DashboardIndicatorRes,
-	DashboardIndicatorResType,
-} from "@/schemaValidations/indicator.schema";
+import { DashboardIndicatorResType } from "@/schemaValidations/indicator.schema";
 
 const colors = [
 	"var(--color-chrome)",

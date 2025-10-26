@@ -68,7 +68,9 @@ export const useOrderService = (orderList: GetOrdersResType["data"]) => {
 						OrderStatus.Pending,
 						OrderStatus.Processing,
 						OrderStatus.Delivered,
-					].includes(order.status as any)
+					].includes(
+						order.status as "Pending" | "Processing" | "Delivered"
+					)
 				);
 				if (isServingGuest) {
 					servingGuestObject[Number(guestId)] = guestOrders;
