@@ -1,5 +1,9 @@
 {
 	"HomePage": {
 		"title": "Xin chào"
+	},
+	"SwitchLanguage": {
+		"en": "Tiếng Anh",
+		"vi": "Tiếng Việt"
 	}
 }

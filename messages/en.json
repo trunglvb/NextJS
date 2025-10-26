@@ -1,5 +1,9 @@
 {
 	"HomePage": {
 		"title": "Hello world!"
+	},
+	"SwitchLanguage": {
+		"en": "English",
+		"vi": "Vietnamese"
 	}
 }

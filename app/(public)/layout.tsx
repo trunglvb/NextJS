@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import DarkModeToggle from "@/components/dark-mode-toggle";
 import NavItems from "@/app/(public)/nav-items";
+import LocaleSwitcherSelect from "@/components/locale-switcher";
 
 export default function Layout({
 	children,
@@ -54,6 +55,9 @@ export default function Layout({
 				</Sheet>
 				<div className="ml-auto">
 					<DarkModeToggle />
+				</div>
+				<div className="ml-auto">
+					<LocaleSwitcherSelect />
 				</div>
 			</header>
 			<main className="flex flex-1 flex-col justify-center gap-4 p-4 md:gap-8 md:p-8">

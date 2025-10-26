@@ -1,6 +1,7 @@
 import DropdownAvatar from "@/app/manage/components/dropdown-avatar";
 import { AppSidebar } from "@/components/app-sidebar";
 import DarkModeToggle from "@/components/dark-mode-toggle";
+import LocaleSwitcherSelect from "@/components/locale-switcher";
 import {
 	SidebarInset,
 	SidebarProvider,
@@ -18,6 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					<div className="flex gap-2">
 						<DarkModeToggle />
 						<DropdownAvatar />
+						<LocaleSwitcherSelect />
 					</div>
 				</header>
 				<div className="my-4">{children}</div>
