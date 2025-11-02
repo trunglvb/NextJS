@@ -1,9 +1,13 @@
 {
 	"HomePage": {
-		"title": "Xin chào"
+		"title": "Xin chào",
+		"name": "Nhà hàng Big Boy"
 	},
 	"SwitchLanguage": {
 		"en": "Tiếng Anh",
 		"vi": "Tiếng Việt"
+	},
+	"Login": {
+		"title": "Đăng nhập"
 	}
 }

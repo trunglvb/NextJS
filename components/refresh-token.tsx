@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import jwt from "jsonwebtoken";
 import authApiRequests from "@/apiRequests/auth";
@@ -17,6 +16,7 @@ import { Role } from "@/constants/type";
 import guestApiRequests from "@/apiRequests/guest";
 import { useAppContext } from "@/components/app-provider";
 import { toast } from "sonner";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 const undauthenticatedPaths = ["/login", "/refresh-token"];
 const RefreshToken = () => {

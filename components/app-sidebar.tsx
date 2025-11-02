@@ -11,8 +11,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import {
 	Home,
 	ShoppingCart,
@@ -22,6 +21,7 @@ import {
 	Users2,
 	MagnetIcon,
 } from "lucide-react";
+import { usePathname } from "@/i18n/navigation";
 
 const iconMap = {
 	home: Home,
@@ -62,7 +62,11 @@ export function AppSidebar({ items }: ISidebarProps) {
 											asChild
 											isActive={item.href === pathName}
 										>
-											<Link href={item.href}>
+											<Link
+												href={item.href}
+												prefetch
+												shallow
+											>
 												<Icon />
 												<span>{item.title}</span>
 											</Link>

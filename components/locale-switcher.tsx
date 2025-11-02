@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { Suspense, useTransition } from "react";
 import { Check, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,14 +9,20 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { setUserLocale } from "@/services/locale";
+
 import { useLocale, useTranslations } from "next-intl";
 import { Locale } from "@/config";
+import {
+	useParams,
+	usePathname,
+	useSearchParams,
+	useRouter,
+} from "next/navigation";
 
 type Props = {
 	items?: Array<{ value: string; label: string }>;
 };
-export default function LocaleSwitcherDropdown(props: Props) {
+function LocaleSwitcherDropdown(props: Props) {
 	const i18n = useTranslations("SwitchLanguage");
 	const locale = useLocale();
 	const defaultItems = [
@@ -24,12 +30,24 @@ export default function LocaleSwitcherDropdown(props: Props) {
 		{ value: "en", label: i18n("en") },
 	];
 	const [isPending, startTransition] = useTransition();
+	const pathname = usePathname();
+	const params = useParams();
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
 	const { items = defaultItems } = props;
 
 	function onChange(value: string) {
 		const nextLocale = value as Locale;
 		startTransition(() => {
-			setUserLocale(nextLocale);
+			const locale = params?.locale as Locale;
+			const newPathName = pathname.replace(
+				`/${locale}`,
+				`/${nextLocale}`
+			);
+			const fullUrl = `${newPathName}?${searchParams.toString()}`;
+			router.replace(fullUrl);
+			router.refresh();
 		});
 	}
 
@@ -60,5 +78,13 @@ export default function LocaleSwitcherDropdown(props: Props) {
 				))}
 			</DropdownMenuContent>
 		</DropdownMenu>
+	);
+}
+
+export default function LocaleSwitcherMain() {
+	return (
+		<Suspense>
+			<LocaleSwitcherDropdown />
+		</Suspense>
 	);
 }

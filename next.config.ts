@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
+	swcMinify: false,
+	// webpack(config) {
+	//   config.optimization.minimize = false; // ép không minify
+	//   return config;
+	// },
 };
 
 export default withNextIntl(nextConfig);

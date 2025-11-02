@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // Potentially imported from a shared config
-const locales = ["en", "vi"] as const;
+import { locales } from "@/config";
 import messages from "./messages/en.json";
 
 declare module "next-intl" {
