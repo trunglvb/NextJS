@@ -10,21 +10,24 @@ import {
 	GuestLoginBodyType,
 	GuestLoginBody,
 } from "@/schemaValidations/guest.schema";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import guestApiRequests from "@/apiRequests/guest";
 import { handleErrorApi, initSocket } from "@/lib/utils";
 import { useAppContext } from "@/components/app-provider";
 import { useRouter } from "@/i18n/navigation";
+import SearchParamsLoader, {
+	useSearchParamsLoader,
+} from "@/components/searchParamsLoader";
 
 export default function GuestLoginForm() {
 	const { setRole, setSocket } = useAppContext();
 	const router = useRouter();
-	const searchParams = useSearchParams();
+	const { searchParams, setSearchParams } = useSearchParamsLoader();
 	const params = useParams();
 	const tableNumber = params?.number;
-	const tableToken = searchParams.get("token");
+	const tableToken = searchParams?.get("token");
 
 	const form = useForm<GuestLoginBodyType>({
 		resolver: zodResolver(GuestLoginBody),
@@ -59,6 +62,7 @@ export default function GuestLoginForm() {
 
 	return (
 		<Card className="mx-auto max-w-sm">
+			<SearchParamsLoader onParamsReceived={setSearchParams} />
 			<CardHeader>
 				<CardTitle className="text-2xl">Đăng nhập gọi món</CardTitle>
 			</CardHeader>

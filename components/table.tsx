@@ -31,8 +31,10 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { ComponentType, JSX, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/pagination";
+import SearchParamsLoader, {
+	useSearchParamsLoader,
+} from "@/components/searchParamsLoader";
 
 interface SearchField<T> {
 	field: keyof T;
@@ -72,8 +74,10 @@ export default function CustomTable<T>({
 	renderTop,
 	isLink = true,
 }: DataTableProps<T>) {
-	const searchParam = useSearchParams();
-	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
+	const { searchParams, setSearchParams } = useSearchParamsLoader();
+	const page = searchParams?.get("page")
+		? Number(searchParams?.get("page"))
+		: 1;
 	const pageIndex = page - 1;
 	const [searchValues, setSearchValues] = useState<Record<string, string>>(
 		{}
@@ -338,6 +342,7 @@ export default function CustomTable<T>({
 					/>
 				</div>
 			</div>
+			<SearchParamsLoader onParamsReceived={setSearchParams} />
 		</div>
 	);
 }

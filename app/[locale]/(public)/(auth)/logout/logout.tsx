@@ -3,22 +3,24 @@
 "use client";
 import authApiRequests from "@/apiRequests/auth";
 import { useAppContext } from "@/components/app-provider";
+import SearchParamsLoader, {
+	useSearchParamsLoader,
+} from "@/components/searchParamsLoader";
 import { useRouter } from "@/i18n/navigation";
 import {
 	getAccessTokenFromLocalStorage,
 	getRefreshTokenFromLocalStorage,
 } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 
 const LogoutPage = () => {
 	const { setRole, setSocket, socket } = useAppContext();
 	const ref = useRef<any>(null);
 	const router = useRouter();
-	const searchParams = useSearchParams();
-	const refreshTokenFromUrl = searchParams.get("refreshToken");
-	const accessTokenFromUrl = searchParams.get("accessToken");
+	const { searchParams, setSearchParams } = useSearchParamsLoader();
+	const refreshTokenFromUrl = searchParams?.get("refreshToken");
+	const accessTokenFromUrl = searchParams?.get("accessToken");
 
 	const logoutMutation = useMutation({
 		mutationFn: authApiRequests.logout,
@@ -51,7 +53,11 @@ const LogoutPage = () => {
 			setRole(undefined);
 		}
 	}, [mutateAsync, router, accessTokenFromUrl, refreshTokenFromUrl]);
-	return <div></div>;
+	return (
+		<div>
+			<SearchParamsLoader onParamsReceived={setSearchParams} />
+		</div>
+	);
 };
 
 export default LogoutPage;

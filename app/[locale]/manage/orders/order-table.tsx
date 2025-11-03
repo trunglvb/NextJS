@@ -31,7 +31,6 @@ import {
 import AddOrder from "@/app/[locale]/manage/orders/add-order";
 import EditOrder from "@/app/[locale]/manage/orders/edit-order";
 import { createContext, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/pagination";
 import { getVietnameseOrderStatus, handleErrorApi } from "@/lib/utils";
 import { OrderStatusValues } from "@/constants/type";
@@ -59,6 +58,9 @@ import orderApis from "@/apiRequests/order";
 import { tableApiRequests } from "@/apiRequests/tables";
 import { toast } from "sonner";
 import { useAppContext } from "@/components/app-provider";
+import SearchParamsLoader, {
+	useSearchParamsLoader,
+} from "@/components/searchParamsLoader";
 
 export const OrderTableContext = createContext({
 	setOrderIdEdit: (value: number | undefined) => {},
@@ -88,11 +90,13 @@ const initFromDate = startOfDay(new Date());
 const initToDate = endOfDay(new Date());
 export default function OrderTable() {
 	const { socket } = useAppContext();
-	const searchParam = useSearchParams();
+	const { searchParams, setSearchParams } = useSearchParamsLoader();
 	const [openStatusFilter, setOpenStatusFilter] = useState(false);
 	const [fromDate, setFromDate] = useState(initFromDate);
 	const [toDate, setToDate] = useState(initToDate);
-	const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
+	const page = searchParams?.get("page")
+		? Number(searchParams?.get("page"))
+		: 1;
 	const pageIndex = page - 1;
 	const [orderIdEdit, setOrderIdEdit] = useState<number | undefined>();
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -253,6 +257,7 @@ export default function OrderTable() {
 			}}
 		>
 			<div className="w-full">
+				<SearchParamsLoader onParamsReceived={setSearchParams} />
 				<EditOrder
 					id={orderIdEdit}
 					setId={setOrderIdEdit}
