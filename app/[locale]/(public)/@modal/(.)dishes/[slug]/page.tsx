@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dishApiRequests from "@/apiRequests/dish";
 import { DishResType } from "@/schemaValidations/dish.schema";
-import Modal from "@/app/[locale]/(public)/@modal/(.)dishes/[id]/modal";
-import DishDetails from "@/app/[locale]/(public)/dishes/[id]/dish-details";
+import Modal from "@/app/[locale]/(public)/@modal/(.)dishes/[slug]/modal";
+import DishDetails from "@/app/[locale]/(public)/dishes/[slug]/dish-details";
+import { getIdFromSlugUrl } from "@/lib/utils";
 
 //(.) la 1 cấp
 //(..) la 2 cấp, ví dụ tạo (..)dishes bên trong dishes (hoac route segment cấp 1 nào khác) dua vao route segment
@@ -11,12 +12,12 @@ import DishDetails from "@/app/[locale]/(public)/dishes/[id]/dish-details";
 export default async function DishPage({
 	params,
 }: {
-	params: Promise<{ id: string }>;
+	params: Promise<{ slug: string }>;
 }) {
-	const { id } = await params;
+	const { slug } = await params;
 	let dish: DishResType["data"];
 	try {
-		const res = await dishApiRequests.get(Number(id));
+		const res = await dishApiRequests.get(Number(getIdFromSlugUrl(slug)));
 		dish = res.payload?.data;
 	} catch (error) {
 		return <div>Something went wrong</div>;

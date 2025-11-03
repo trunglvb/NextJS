@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
+import { generateSlugUrl } from "@/lib/utils";
 
 type Props = {
 	params: Promise<{ locale: string }>;
@@ -49,7 +50,10 @@ export default async function Home({ params }: Props) {
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
 					{dishList.map((item, index) => (
 						<Link
-							href={`dishes/${item?.id}`}
+							href={`/dishes/${generateSlugUrl({
+								name: item.name,
+								id: item.id,
+							})}`}
 							className="flex gap-4 w"
 							key={index}
 						>
