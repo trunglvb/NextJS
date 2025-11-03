@@ -43,13 +43,7 @@ export default function NavItems({ className }: { className?: string }) {
 
 		if (isAuth || canshow) {
 			return (
-				<Link
-					href={item.href}
-					key={item.href}
-					className={className}
-					prefetch
-					shallow
-				>
+				<Link href={item.href} key={item.href} className={className}>
 					{item.title}
 				</Link>
 			);
