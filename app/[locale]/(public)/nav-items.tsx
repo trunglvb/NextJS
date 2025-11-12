@@ -36,7 +36,6 @@ const menuItems: IMenuItems[] = [
 
 export default function NavItems({ className }: { className?: string }) {
 	const { role } = useAppContext();
-	console.log(role);
 	return menuItems.map((item) => {
 		const isAuth = role && item?.role && item.role.includes(role);
 		const canshow = item.hideLogined && !role;

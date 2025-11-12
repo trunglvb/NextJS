@@ -129,7 +129,7 @@ export default function EditOrder({
 						noValidate
 						className="grid auto-rows-max items-start gap-4 md:gap-8"
 						id="edit-order-form"
-						onSubmit={form.handleSubmit(onSubmit, console.log)}
+						onSubmit={form.handleSubmit(onSubmit)}
 					>
 						<div className="grid gap-4 py-4">
 							<FormField

@@ -1,7 +1,8 @@
 {
 	"HomePage": {
-		"title": "Hello world!",
-		"name": "Big boy Restaurant"
+		"title": "Hanoi Street City!",
+		"name": "Hanoi Street City",
+		"description": "Discover the authentic taste of Hanoi at Hanoi Street Food Restaurant, where every dish captures the soul of Vietnam's bustling streets. From steaming bowls of phở and crispy bánh xèo to flavorful bún chả grilled over charcoal, we bring traditional recipes to life with the freshest local ingredients. Whether you're a traveler seeking real Vietnamese cuisine or a local craving nostalgic street flavors, our warm, cozy space offers a true Hanoi dining experience. Visit us today and enjoy the best of Vietnamese street food in Hanoi — delicious, aromatic, and unforgettable."
 	},
 	"SwitchLanguage": {
 		"en": "English",

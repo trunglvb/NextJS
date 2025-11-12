@@ -33,7 +33,6 @@ export default function DropdownAvatar() {
 		await loginMutation.mutateAsync({
 			refreshToken: localStorage.getItem("refreshToken") as string,
 		});
-		console.log("set role");
 		setRole(undefined);
 		socket?.disconnect();
 		setSocket(undefined);

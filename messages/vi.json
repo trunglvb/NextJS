@@ -1,7 +1,8 @@
 {
 	"HomePage": {
-		"title": "Xin chào",
-		"name": "Nhà hàng Big Boy"
+		"title": "Hanoi Street City",
+		"name": "Hanoi Street City",
+		"description": "Thưởng thức hương vị ẩm thực đường phố Hà Nội đích thực tại Hanoi Street Food Restaurant - nơi tái hiện tinh hoa ẩm thực Việt Nam trong từng món ăn. Từ bát phở nóng hổi, bánh xèo giòn rụm đến bún chả nướng than thơm lừng, tất cả được chế biến theo công thức truyền thống với nguyên liệu tươi ngon nhất. Dù bạn là du khách muốn khám phá ẩm thực Việt hay người Hà Nội tìm lại hương vị thân quen, không gian ấm cúng của chúng tôi sẽ mang đến trải nghiệm ẩm thực đáng nhớ. Hãy ghé thăm để thưởng thức đặc sản đường phố Hà Nội - ngon, thơm và chuẩn vị!"
 	},
 	"SwitchLanguage": {
 		"en": "Tiếng Anh",
